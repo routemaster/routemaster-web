@@ -1,0 +1,135 @@
+/* Global styles file for RouteMaster */
+
+@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,600);
+@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+
+/* Apply a CSS-reset
+ * http://meyerweb.com/eric/tools/css/reset/
+ * v2.0 | 20110126
+ * License: none (public domain)
+ */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p,
+blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img,
+ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center,
+dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody,
+tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure,
+figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav,
+section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after, q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+/* End of CSS-reset */
+
+/* Global styles */
+@font-face {
+    font-family: "Droid Sans";
+    src: local("Droid Sans"), url("DroidSans.ttf");
+}
+body {
+   background-color: #dddddb;
+   background-image: url("../img/background-gradient.png");
+   /*background-image: linear-gradient(to bottom, #f3f3f1, #dddddb);*/
+   background-repeat: repeat-x;
+   color: #252a2b;
+   font: 100%/1.4 "Source Sans Pro", sans-serif;
+   text-align: center;
+}
+
+/* Section styles */
+section {
+    padding: 0.2em 0;
+}
+section.green {
+    background-color: #69ad42;
+}
+section.red {
+    background-color: #cf4740;
+}
+section p {
+    padding: 0.2em 0.5em;
+    text-align: left;
+}
+section img {
+    border: 1px solid #babdb6;
+    border-radius: 0.5em;
+    margin: 0.2em 0;
+}
+header#top {
+    background-color: #3465a4;
+    color: #f4f4f3;
+}
+header#top h1 {
+    font-size: 1.4em;
+    line-height: 1;
+    padding: 0.2em 0.2em;
+    padding-top: 0.25em;
+}
+header#top img {
+    vertical-align: middle;
+}
+footer {
+    border-top: 1px solid #babdb6;
+    font-size: 0.7em;
+    margin: 0.2em 0.5em;
+}
+
+/* Text styles */
+a {
+    color: #166fe0;
+}
+em {
+    font-style: italic;
+}
+strong {
+    font-weight: 600;
+}
+h1, h2 {
+    font-weight: bold;
+}
+h1 {
+    font-size: 1.3em;
+}
+h2 {
+    font-size: 1.1em;
+}
+code, var {
+    font-family: "Source Code Pro", monospace;
+}
+dt {
+    float: left;
+    padding: 0 0.5em;
+    text-align: right;
+    width: 50%;
+}
+dd {
+    font-weight: bold;
+    margin-left: 50%;
+    padding: 0 0.5em;
+    text-align: left;
+}
