@@ -11,6 +11,10 @@
     <artifactId>routemaster-frontend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <url>https://github.com/routemaster/routemaster-frontend</url>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <!-- Tell maven about our directory hierarchy -->
     <build>
@@ -31,8 +35,8 @@
             </resource>
         </resources>
 
-        <!-- Tell maven how to run it -->
         <plugins>
+            <!-- Tell maven how to run it -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -43,6 +47,31 @@
                             <mainClass>routemaster.Server</mainClass>
                         </manifest>
                     </archive>
+                </configuration>
+            </plugin>
+
+            <!-- Configure JSLint -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jslint-maven-plugin</artifactId>
+                <version>1.0.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jslint</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceJsFolder>${basedir}/src/js</sourceJsFolder>
+                    <!-- Pick which non-standard options we want -->
+                    <tolerateES5Syntax>true</tolerateES5Syntax>
+                    <requireUseStrict>true</requireUseStrict>
+                    <tolerateContinuation>true</tolerateContinuation>
+                    <tolerateDebuggerStatements>
+                        <!-- TODO: This should be removed after Sprint 3 -->
+                        true
+                    </tolerateDebuggerStatements>
                 </configuration>
             </plugin>
         </plugins>
