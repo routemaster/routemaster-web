@@ -18,6 +18,19 @@ This is the repository for our front-end. It will contain a minimal development
 webserver in Java, and the HTML, CSS, and Javascript needed for our UI.
 Eventually it should contain the build scripts for our Phonegap builds.
 
+Building the Project
+--------------------
+
+1. Install Maven
+    - Install it on Debian with `aptitude install maven`
+    - Install it on Arch with `pacman -S maven`
+    - The Maven wiki has
+      [installation instructions for Windows](https://maven.apache.org/guides/getting-started/windows-prerequisites.html)
+2. Package the application with `mvn package`
+    - You can alternatively run `mvn compile`, which builds only the class files
+      and copies over the resources into `bin`
+3. Run the jar with `java -jar dist/routemaster-frontend-0.0.1-SNAPSHOT.jar`.
+
 Project Scope
 -------------
 
