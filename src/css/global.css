@@ -53,9 +53,8 @@ table {
 }
 body {
    background-color: #dddddb;
-   background-image: url("../img/background-gradient.png");
-   /*background-image: linear-gradient(to bottom, #f3f3f1, #dddddb);*/
-   background-repeat: repeat-x;
+   background-image: linear-gradient(to bottom, #f3f3f1, #dddddb 300px);
+   background-repeat: no-repeat;
    color: #252a2b;
    font: 100%/1.4 "Source Sans Pro", sans-serif;
    text-align: center;
