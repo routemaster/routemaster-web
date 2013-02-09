@@ -1,0 +1,59 @@
+<!-- https://maven.apache.org/guides/getting-started/index.html -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Project description -->
+    <name>RouteMaster Server Frontend</name>
+    <groupId>com.routemaster.frontend</groupId>
+    <artifactId>routemaster-frontend</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <url>https://github.com/routemaster/routemaster-frontend</url>
+
+    <!-- Tell maven about our directory hierarchy -->
+    <build>
+        <directory>${basedir}/dist</directory>
+        <outputDirectory>${basedir}/bin</outputDirectory>
+        <sourceDirectory>${basedir}/src_java</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/html</directory>
+            </resource>
+            <resource>
+                <directory>${basedir}/src</directory>
+                <includes>
+                    <include>css/**</include>
+                    <include>img/**</include>
+                    <include>js/**</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <!-- Tell maven how to run it -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>routemaster.Server</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Tell maven our dependencies so it can find and install them -->
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>9.0.0.RC0</version>
+        </dependency>
+    </dependencies>
+</project>
