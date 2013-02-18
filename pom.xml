@@ -28,7 +28,6 @@
             <resource>
                 <directory>${basedir}/src</directory>
                 <includes>
-                    <include>css/**</include>
                     <include>img/**</include>
                     <include>js/**</include>
                 </includes>
@@ -72,6 +71,26 @@
                         <!-- TODO: This should be removed after Sprint 3 -->
                         true
                     </tolerateDebuggerStatements>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jasig.maven</groupId>
+                <artifactId>sass-maven-plugin</artifactId>
+                <version>1.0.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>update-stylesheets</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <baseOutputDirectory>${project.build.directory}/css</baseOutputDirectory>
+                    <sassSourceDirectory>${basedir}/src/scss</sassSourceDirectory>
+                    <sassOptions>
+                        <style>:compact</style>
+                    </sassOptions>
                 </configuration>
             </plugin>
         </plugins>
