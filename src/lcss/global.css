@@ -1,7 +1,21 @@
 /* Global styles file for RouteMaster */
 
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,600);
-@import url(http://fonts.googleapis.com/css?family=Source+Code+Pro);
+/* Grab fonts from Google */
+@import url('http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,600');
+@import url('http://fonts.googleapis.com/css?family=Source+Code+Pro');
+
+/* Define colors */
+@bgcolor1: #f3f3f1;
+@bgcolor2: #dddddb;
+@greenbg: #69ad42;
+@redbg: #cf4740;
+@headerbg: #3465a4;
+
+@blacktext: #252a2b;
+@headertext: #f4f4f3;
+@linktext: #166fe0;
+
+@bordercolor: #babdb6;
 
 /* Apply a CSS-reset
  * http://meyerweb.com/eric/tools/css/reset/
@@ -52,10 +66,10 @@ table {
     src: local("Droid Sans"), url("DroidSans.ttf");
 }
 body {
-   background-color: #dddddb;
-   background-image: linear-gradient(to bottom, #f3f3f1, #dddddb 300px);
+   background-color: @bgcolor2;
+   background-image: linear-gradient(to bottom, @bgcolor1, @bgcolor2 300px);
    background-repeat: no-repeat;
-   color: #252a2b;
+   color: @blacktext;
    font: 100%/1.4 "Source Sans Pro", sans-serif;
    text-align: center;
 }
@@ -65,23 +79,23 @@ section {
     padding: 0.2em 0;
 }
 section.green {
-    background-color: #69ad42;
+    background-color: @greenbg;
 }
 section.red {
-    background-color: #cf4740;
+    background-color: @redbg;
 }
 section p {
     padding: 0.2em 0.5em;
     text-align: left;
 }
 section img {
-    border: 1px solid #babdb6;
+    border: 1px solid @bordercolor;
     border-radius: 0.5em;
     margin: 0.2em 0;
 }
 header#top {
-    background-color: #3465a4;
-    color: #f4f4f3;
+    background-color: @headerbg;
+    color: @headertext;
 }
 header#top h1 {
     font-size: 1.4em;
@@ -93,14 +107,14 @@ header#top img {
     vertical-align: middle;
 }
 footer {
-    border-top: 1px solid #babdb6;
+    border-top: 1px solid @bordercolor;
     font-size: 0.7em;
     margin: 0.2em 0.5em;
 }
 
 /* Text styles */
 a {
-    color: #166fe0;
+    color: @linktext;
 }
 em {
     font-style: italic;
