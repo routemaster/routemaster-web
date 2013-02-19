@@ -33,6 +33,12 @@
                     <include>js/**</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>${basedir}/lib</directory>
+                <includes>
+                    <include>js/**</include>
+                </includes>
+            </resource>
         </resources>
 
         <plugins>

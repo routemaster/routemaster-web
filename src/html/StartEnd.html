@@ -3,14 +3,19 @@
 <head>
   <meta charset="utf-8">
   <title>Start/End Debug Page - RouteMaster</title>
+  <script type="text/javascript" src="js/zepto.min.js"></script>
+  <script type="text/javascript" src="js/underscore-min.js"></script>
+  <script type="text/javascript" src="js/backbone-min.js"></script>
   <script type="text/javascript" src="js/StartEnd.js"></script>
 </head>
 <body>
-  <p id="status">Press Start to begin.</p>
-  <p id="location" style="display:none"></p>
-  <p>
-    <button id="start-button">Start</button>
-    <button id="end-button" disabled>End</button>
-  </p>
+  <div id="gps-status">
+    <p id="status">Loading...</p>
+    <p id="position" style="display:none"></p>
+    <p>
+      <button id="start-button">Start</button>
+      <button id="stop-button" disabled>Stop</button>
+    </p>
+  </div>
 </body>
 </html>
