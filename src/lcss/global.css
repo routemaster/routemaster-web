@@ -1,21 +1,55 @@
 /* Global styles file for RouteMaster */
 
-/* Grab fonts from Google */
-@import url('http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,700,600');
-@import url('http://fonts.googleapis.com/css?family=Source+Code+Pro');
+/* Fonts */
+@font-face {
+  font-family: 'Source Code Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Code Pro'), local('SourceCodePro-Regular'),
+       url('../img/SourceCodePro400.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro'), local('SourceSansPro-Regular'),
+       url('../img/SourceSansPro400.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 600;
+  src: local('Source Sans Pro Semibold'), local('SourceSansPro-Semibold'),
+       url('../img/SourceSansPro600.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 700;
+  src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'),
+       url('../img/SourceSansPro700.ttf') format('truetype');
+}
 
-/* Define colors */
+/* Colors */
 @bgcolor1: #f3f3f1;
 @bgcolor2: #dddddb;
+@bluebg: #3465a4;
+@headerbg: #3465a4;
+@graybg: #d0d0cd;
 @greenbg: #69ad42;
 @redbg: #cf4740;
-@headerbg: #3465a4;
+@yellowbg: #c6bd28;
 
 @blacktext: #252a2b;
 @headertext: #f4f4f3;
 @linktext: #166fe0;
+@whitetext: #f4f4f3;
 
-@bordercolor: #babdb6;
+@blueborder: #182f4c;
+@grayborder: #babdb6;
+@greenborder: #355721;
+@redborder: #782925;
+@yellowborder: #6f6a1d;
 
 /* Apply a CSS-reset
  * http://meyerweb.com/eric/tools/css/reset/
@@ -60,18 +94,62 @@ table {
 }
 /* End of CSS-reset */
 
-/* Global styles */
-@font-face {
-    font-family: "Droid Sans";
-    src: local("Droid Sans"), url("DroidSans.ttf");
+/* Page styles */
+html {
+    height: 100%;
 }
 body {
-   background-color: @bgcolor2;
-   background-image: linear-gradient(to bottom, @bgcolor1, @bgcolor2 300px);
-   background-repeat: no-repeat;
-   color: @blacktext;
-   font: 100%/1.4 "Source Sans Pro", sans-serif;
-   text-align: center;
+    background-color: @bgcolor2;
+    background-image: linear-gradient(to bottom, @bgcolor1, @bgcolor2 300px);
+    background-repeat: no-repeat;
+    color: @blacktext;
+    font: 100%/1.4 "Source Sans Pro", sans-serif;
+    height: 100%;
+    margin-top: 74px;
+    text-align: center;
+}
+div#top {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+}
+div#top > header {
+    background-color: @headerbg;
+    color: @headertext;
+    height: 37px;
+}
+div#top > header h1 {
+    font-size: 1.4em;
+    line-height: 34px;
+}
+div#top > header img {
+    vertical-align: middle;
+}
+div#top > header #menu-button {
+    padding: 0.2em;
+    position: absolute;
+    right: 0.2em;
+    top: 0.2em;
+}
+div#top > nav {
+    display: table;
+    height: 37px;
+    width: 100%;
+}
+div#top > nav a {
+    border-radius: 0;
+    display: table-cell;
+    font-size: 0.8em;
+    line-height: 35px;
+    padding: 0;
+    text-decoration: none;
+    width: 25%;
+}
+footer {
+    border-top: 1px solid @grayborder;
+    font-size: 0.7em;
+    margin: 0.2em 0.5em;
 }
 
 /* Section styles */
@@ -84,32 +162,56 @@ section.green {
 section.red {
     background-color: @redbg;
 }
+section.hidden {
+    display: none;
+}
 section p {
     padding: 0.2em 0.5em;
     text-align: left;
 }
 section img {
-    border: 1px solid @bordercolor;
+    border: 1px solid @grayborder;
     border-radius: 0.5em;
     margin: 0.2em 0;
 }
-header#top {
-    background-color: @headerbg;
-    color: @headertext;
+section li {
+    padding: 0.2em 0.5em;
 }
-header#top h1 {
-    font-size: 1.4em;
-    line-height: 1;
-    padding: 0.2em 0.2em;
-    padding-top: 0.25em;
+section ul.listing {
+    text-align: left;
 }
-header#top img {
+section ul.listing li {
+    padding: 0;
+}
+section ul.listing li:nth-child(odd) {
+    background-color: @graybg;
+}
+section ul.listing li > a {
+    display: block;
+    padding: 0.4em 0.5em;
+}
+form ul {
+    display: table;
+    width: 100%;
+}
+form li {
+    display: table-row;
+}
+form li:hover {
+    background: @graybg;
+}
+form label,
+form span {
+    display: table-cell;
+    padding: 0.2em 0.5em;
     vertical-align: middle;
 }
-footer {
-    border-top: 1px solid @bordercolor;
-    font-size: 0.7em;
-    margin: 0.2em 0.5em;
+form label {
+    border-right: 1px solid @grayborder;
+    text-align: right;
+}
+form span {
+    text-align: left;
 }
 
 /* Text styles */
@@ -145,4 +247,29 @@ dd {
     margin-left: 50%;
     padding: 0 0.5em;
     text-align: left;
+}
+button,
+a.button,
+nav a {
+    background: @bluebg;
+    border: 1px solid @blueborder;
+    border-radius: 0.4em;
+    color: @whitetext;
+    display: block;
+    padding: 0.3em 0.5em;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: black 0 0 2px;
+}
+button:hover, button:active,
+a.button:hover, a.button:active,
+nav a:hover, nav a:active {
+    background-color: lighten(@bluebg, 10%);
+    cursor: pointer;
+}
+button.active,
+a.button.active {
+    background-color: @greenbg;
+    border-color: @greenborder;
+    cursor: default;
 }
