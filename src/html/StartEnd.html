@@ -9,13 +9,31 @@
   <script type="text/javascript" src="js/StartEnd.js"></script>
 </head>
 <body>
-  <div id="gps-status">
-    <p id="status">Loading...</p>
-    <p id="position" style="display:none"></p>
+  <div id="gps-status"></div>
+
+  <!-- Templates -->
+  <script type="text/template" id="gps-status-tmpl">
+    <% if(isTracking) { %>
+      <p id="status"><%- formatTime(Date.now() - startTime) %></p>
+      <p id="position">
+        <% if(position === undefined) { %>
+          Waiting for Location
+        <% } else { %>
+          Latitude: <%- position.coords.latitude %>,
+          Longitude: <%- position.coords.longitude %>
+        <% } %>
+      </p>
+    <% } else { %>
+      <p id="status">Press "Start" to Begin</p>
+    <% } %>
     <p>
-      <button id="start-button">Start</button>
-      <button id="stop-button" disabled>Stop</button>
+      <button id="start-button" <% if(isTracking) { %> disabled <% } %>>
+        Start
+      </button>
+      <button id="stop-button" <% if(!isTracking) { %> disabled <% } %>>
+        End
+      </button>
     </p>
-  </div>
+  </script>
 </body>
 </html>

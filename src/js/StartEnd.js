@@ -57,6 +57,7 @@ $(function() {
         GpsView = Backbone.View.extend({
 
         el: $("#gps-status"),
+        template: _.template($("#gps-status-tmpl").html()),
         model: new GpsTracker(),
         events: {
             "click #start-button": "startTracking",
@@ -72,11 +73,14 @@ $(function() {
         },
 
         render: function() {
-            this.renderStatus().renderPosition();
-            this.$("#start-button")
-                .prop("disabled", this.model.get("isTracking"));
-            this.$("#stop-button")
-                .prop("disabled", !this.model.get("isTracking"));
+            var state = _.extend(_.clone(this.model.attributes), {
+                formatTime: _.bind(this.formatTime, this)
+            });
+            this.$el.html(this.template(state));
+            if(this.model.get("isTracking")) {
+                // Update the time
+                _.delay(_.bind(this.render, this), 1000);
+            }
         },
 
         // Takes a time delta (in milliseconds) and templates it
@@ -92,38 +96,6 @@ $(function() {
         },
         
         defaultTimeTemplate: _.template("<%= hrs %>:<%= min %>:<%= sec %>"),
-
-        renderStatus: function() {
-            var elStatus = this.$("#status"),
-                dt;
-            if(this.model.get("isTracking")) {
-                dt = Date.now() - this.model.get("startTime");
-                elStatus.html(this.formatTime(dt));
-                _.delay(_.bind(this.renderStatus, this), 1000);
-            } else {
-                elStatus.html("Press \"Start\" to Begin");
-            }
-            return this;
-        },
-
-        renderPosition: function() {
-            var elPosition = this.$("#position"),
-                modelPostion = this.model.get("position");
-            this.$("#position").css("display",
-                this.model.get("isTracking") ? "" : "none"
-            );
-            if(this.model.get("isTracking")) {
-                if(modelPostion === undefined) {
-                    elPosition.html("Waiting for Location");
-                } else {
-                    elPosition.html(
-                        "Latitude: " + modelPostion.coords.latitude +
-                        ", Longitude: " + modelPostion.coords.longitude
-                    );
-                }
-            }
-            return this;
-        },
 
         startTracking: function() {
             this.model.startTracking();
