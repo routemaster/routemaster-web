@@ -28,7 +28,6 @@
             <resource>
                 <directory>${basedir}/src</directory>
                 <includes>
-                    <include>css/**</include>
                     <include>img/**</include>
                     <include>js/**</include>
                 </includes>
@@ -93,11 +92,11 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <sourceDirectory>${basedir}/src/lcss</sourceDirectory>
+                    <sourceDirectory>${basedir}/src/less</sourceDirectory>
                     <outputDirectory>${basedir}/bin/css</outputDirectory>
                     <compress>true</compress>
                     <includes>
-                        <include>*.css</include>
+                        <include>*.less</include>
                     </includes>
                 </configuration>
             </plugin>
