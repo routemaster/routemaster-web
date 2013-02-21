@@ -5,19 +5,21 @@
   <title>RouteMaster</title>
   <link href="css/global.css" rel="stylesheet" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="js/zepto.min.js"></script>
   <script type="text/javascript">
-    window.addEventListener('hashchange', function () {
-        var buttonId = 'with-' + window.location.hash.substring(1);
-        var sectionId = 'form-' + window.location.hash.substring(1);
-        document.getElementById('with-facebook').classList.remove('active');
-        document.getElementById('with-twitter').classList.remove('active');
-        document.getElementById('with-openid').classList.remove('active');
-        document.getElementById(buttonId).classList.add('active');
-        document.getElementById('form-facebook').classList.add('hidden');
-        document.getElementById('form-twitter').classList.add('hidden');
-        document.getElementById('form-openid').classList.add('hidden');
-        document.getElementById(sectionId).classList.remove('hidden');
-    });
+    var choose = function () {
+        var buttonId = '#with-' + window.location.hash.substring(1);
+        var sectionId = '#form-' + window.location.hash.substring(1);
+        $('#with-facebook').removeClass('active');
+        $('#with-twitter').removeClass('active');
+        $('#with-openid').removeClass('active');
+        $(buttonId).addClass('active');
+        $('#form-facebook').addClass('hidden');
+        $('#form-twitter').addClass('hidden');
+        $('#form-openid').addClass('hidden');
+        $(sectionId).removeClass('hidden');
+    };
+    $(window).on('hashchange', choose);
     window.location.hash = '';
     window.location.hash = '#facebook';
   </script>
