@@ -5,6 +5,20 @@
   <title>RouteMaster</title>
   <link href="css/global.css" rel="stylesheet" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+  <!--[if lte IE 8]>
+       <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+        <![endif]-->
+  <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+  <script>
+    window.onload=function(){
+      var map = L.map('map').setView([29.648335, -82.344444], 17);
+      L.tileLayer('http://{s}.tile.cloudmade.com/224368f2fecd4d6ea1220606add67f43/997/256/{z}/{x}/{y}.png', {
+          attribution: 'RouteMaster',
+	      maxZoom: 18
+	      }).addTo(map);
+    }
+  </script>
 </head>
 <body>
   <header id="top">
@@ -21,7 +35,8 @@
     <p>This paragraph is in a <strong>green section</strong>.</p>
   </section>
     <p>Here's an example of what the map might end up looking like:</p>
-    <img src="img/map-tile-200x200.png" width="200" height="200" alt="map">
+    <!--<img src="img/map-tile-200x200.png" width="200" height="200" alt="map"-->
+    <div id="map"></div>
     <h2>Current scores</h2>
     <dl>
       <dt>Efficiency</dt>
