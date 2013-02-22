@@ -14,25 +14,37 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.eclipse.jetty.util.log.Logger;
 
-public class JettyServer {
+public class JettyServer extends Server {
     //private static final Logger LOG = Log.getLogger(JettyServer.class);
+    ResourceHandler resource_handler = new ResourceHandler();
 
-    public static void main(String[] args) throws Exception {
-        Server server = new Server(
-            args.length == 0 ? 8080 : Integer.parseInt(args[0]));
+    public JettyServer() {
+        this(8080);
+    }
 
-        ResourceHandler resource_handler = new ResourceHandler();
-        resource_handler.setDirectoriesListed(true);
-        resource_handler.setWelcomeFiles(new String[]{ "index.html" });
+    public JettyServer(int port) {
+        super(port);
 
-        resource_handler.setResourceBase(args.length == 2 ? args[1] : ".");
+        resource_handler = new ResourceHandler();
+        resource_handler.setDirectoriesListed(false);
+        resource_handler.setWelcomeFiles(new String[]{
+            "index.html", "demo.html"
+        });
+
+        // Use the resources packaged into our jarfile
+        resource_handler.setResourceBase(
+            getClass().getClassLoader().getResource("").toExternalForm());
         //LOG.info("serving " + resource_handler.getBaseResource());
 
         HandlerList handlers = new HandlerList();
         handlers.setHandlers(new Handler[] {
             resource_handler, new DefaultHandler() });
-        server.setHandler(handlers);
+        setHandler(handlers);
+    }
 
+    public static void main(String[] args) throws Exception {
+        JettyServer server = new JettyServer(
+            args.length == 0 ? 8080 : Integer.parseInt(args[0]));
         server.start();
         server.join();
     }
