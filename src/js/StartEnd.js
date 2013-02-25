@@ -1,78 +1,113 @@
-/*global window*/
-(function() {
+/*global window, Backbone, _, $, console*/
+$(function() {
     "use strict";
-    var ispathing = false,
-        starttime = 0.0,
-        pathtime = 0.0,
-        watchPosId,
-        startbutton = document.getElementById('start-button'),
-        endbutton = document.getElementById('end-button'),
-        statustext = document.getElementById('status'),
-        loctext = document.getElementById('location'),
-        updateTimeInterval,
 
-        updateText = function (text) {
-            statustext.innerHTML = text;
+    var GpsTracker = Backbone.Model.extend({
+        defaults: {
+            isTracking: false,
+            startTime: undefined,
+            updatedTime: undefined,
+            watchPositionId: undefined, // unique id given by watchPosition()
+            position: undefined,
+            lastError: undefined
         },
 
-        toTime = function(timer) {
-            if(timer > 9) {
-                return timer;
+        initialize: function() {
+            if(this.get("isTracking")) {
+                this.startTracking();
             }
-            return "0"+timer;
         },
 
-        convertSeconds = function (seconds) {
-            var hours = Math.floor(seconds/3600),
-                minutes = Math.floor((seconds % 3600) / 60),
-                newseconds = Math.ceil(seconds % 3600 % 60);
-            return "Time: " + toTime(hours) + ":" + toTime(minutes)
-                + ":" + toTime(newseconds);
+        startTracking: function() {
+            var now = Date.now();
+            if(this.get("isTracking")) { return; }
+            this.set({
+                isTracking: true,
+                startTime: now,
+                updatedTime: now,
+                lastError: undefined,
+                watchPositionId: navigator.geolocation.watchPosition(
+                    _.bind(this.updatePosition, this),
+                    _.bind(this.updatePositionError, this),
+                    {enableHighAccuracy: true}
+                )
+            });
         },
 
-        updateTime = function () {
-            pathtime = new Date().getTime()/1000 - starttime;
-            var pasttime = convertSeconds(pathtime);
-            updateText(pasttime);
+        stopTracking: function() {
+            if(!this.get("isTracking")) { return; }
+            navigator.geolocation.clearWatch(this.get("watchPosId"));
+            this.set("isTracking", false);
         },
 
-        updateLoc = function(position) {
-            // Dependent on if we're tracking without app being active, may remove
-            // and just call updateLoc at the very beginning and leave it running, 
-            // with a separate function for map tile checking
-            if(!ispathing) {
-                return;
+        updatePosition: function(position) {
+            // called via navigator.geolocation.watchPosition
+            this.set({
+                position: position,
+                updatedTime: Date.now()
+            });
+        },
+
+        updatePositionError: function(error) {
+            this.set("lastError", error);
+            this.stopTracking();
+        }
+    }),
+
+        GpsView = Backbone.View.extend({
+
+        el: $("#gps-status"),
+        template: _.template($("#gps-status-tmpl").html()),
+        model: new GpsTracker(),
+        events: {
+            "click #start-button": "startTracking",
+            "click #stop-button": "stopTracking"
+        },
+
+        initialize: function() {
+            this.model.on(
+                "change:isTracking change:lastError change:position",
+                _.bind(this.render, this)
+            );
+            this.render();
+        },
+
+        render: function() {
+            var state = _.extend(_.clone(this.model.attributes), {
+                formatTime: _.bind(this.formatTime, this)
+            });
+            this.$el.html(this.template(state));
+            if(this.model.get("isTracking")) {
+                // Update the time
+                _.delay(_.bind(this.render, this), 1000);
             }
-            loctext.innerHTML = "Location: "+position.coords.latitude +
-                ", " + position.coords.longitude;
-            // Insert server code here?
         },
 
-        start = function () {
-            window.alert("Start was called"); // Exists for testing purposes
-            starttime = new Date().getTime() / 1000;
-            startbutton.disabled = true;
-            endbutton.disabled = false;
-            loctext.style.display = "inline";
-            ispathing = true;
-            watchPosId = navigator.geolocation.watchPosition(updateLoc);
-            updateTimeInterval = window.setInterval(updateTime, 1000);
+        // Takes a time delta (in milliseconds) and templates it
+        formatTime: function(ms, template) {
+            var f = Math.floor;
+            template = template || this.defaultTimeTemplate;
+            template = _.isFunction(template) ? template : _.template(template);
+            return template({
+                hrs: f(ms / 60 / 60 / 1000),
+                min: f(ms      / 60 / 1000 % 60),
+                sec: f(ms           / 1000 % 60)
+            });
+        },
+        
+        defaultTimeTemplate: _.template("<%= hrs %>:<%= min %>:<%= sec %>"),
+
+        startTracking: function() {
+            this.model.startTracking();
         },
 
-        end = function () {
-            window.alert("The path has ended."); // Exists for testing purposes
-            ispathing = false;
-            updateText("The path has ended.");
-            pathtime = new Date().getTime()/1000 - starttime;
-            startbutton.disabled = false;
-            endbutton.disabled = true;
-            loctext.style.display = "none";
-            navigator.geolocation.clearWatch(watchPosId);
-            window.clearInterval(updateTimeInterval);
-            updateTimeInterval = null;
-            // Do something with path time.
-        };
+        stopTracking: function() {
+            this.model.stopTracking();
+        }
+    });
 
-    startbutton.onclick = start;
-    endbutton.onclick = end;
-}());
+    (function() {
+        // kick things off
+        var gpsView = new GpsView();
+    }());
+});
