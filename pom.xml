@@ -55,28 +55,31 @@
                 </configuration>
             </plugin>
 
-            <!-- Configure JSLint -->
+            <!-- Configure JSHint -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jslint-maven-plugin</artifactId>
-                <version>1.0.1</version>
+                <groupId>org.mule.tools.javascript</groupId>
+                <artifactId>jshint-maven-plugin</artifactId>
+                <version>1.0-SNAPSHOT</version>
                 <executions>
                     <execution>
+                        <phase>validate</phase>
                         <goals>
-                            <goal>jslint</goal>
+                            <goal>jshint</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <sourceJsFolder>${basedir}/src/js</sourceJsFolder>
-                    <!-- Pick which non-standard options we want -->
-                    <tolerateES5Syntax>true</tolerateES5Syntax>
-                    <requireUseStrict>true</requireUseStrict>
-                    <tolerateContinuation>true</tolerateContinuation>
-                    <tolerateDebuggerStatements>
-                        <!-- TODO: This should be removed after Sprint 3 -->
-                        true
-                    </tolerateDebuggerStatements>
+                    <sourceDirectory>${basedir}/src/js</sourceDirectory>
+                    <config>
+                        <!-- Pick which non-standard options we want -->
+                        <camelcase>true</camelcase>
+                        <eqeqeq>true</eqeqeq>
+                        <maxlen>80</maxlen>
+                        <es5>true</es5>
+                        <strict>true</strict>
+                        <trailing>true</trailing>
+                        <browser>true</browser>
+                    </config>
                 </configuration>
             </plugin>
 
@@ -111,4 +114,17 @@
             <version>9.0.0.RC0</version>
         </dependency>
     </dependencies>
+
+    <!-- The JSHint plugin we use isn't in standard repositories -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>mulesoft-snapshots</id>
+            <name>MuleSoft Snapshot Repository</name>
+            <url>https://repository.mulesoft.org/snapshots/</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
