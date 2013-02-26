@@ -49,7 +49,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>routemaster.Server</mainClass>
+                            <mainClass>routemaster.JettyServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -113,15 +113,40 @@
                     </sassOptions>
                 </configuration>
             </plugin>
+            
+            <!-- Upon exec, start our JettyServer -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>routemaster.JettyServer</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <!-- Tell maven our dependencies so it can find and install them -->
     <dependencies>
+        <!-- Jetty is our http server library -->
         <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
-            <version>9.0.0.RC0</version>
+            <version>8.1.9.v20130131</version>
+        </dependency>
+
+        <!-- Use log4j for logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.2</version>
         </dependency>
     </dependencies>
 
