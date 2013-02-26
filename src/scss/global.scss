@@ -100,7 +100,7 @@ html {
 }
 body {
     background-color: $bgcolor2;
-    background-image: linear-gradient(to bottom, @bgcolor1, @bgcolor2 300px);
+    background-image: linear-gradient(to bottom, $bgcolor1, $bgcolor2 300px);
     background-repeat: no-repeat;
     color: $blacktext;
     font: 100%/1.4 "Source Sans Pro", sans-serif;
