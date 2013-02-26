@@ -31,25 +31,25 @@
 }
 
 /* Colors */
-@bgcolor1: #f3f3f1;
-@bgcolor2: #dddddb;
-@bluebg: #3465a4;
-@headerbg: #3465a4;
-@graybg: #d0d0cd;
-@greenbg: #69ad42;
-@redbg: #cf4740;
-@yellowbg: #c6bd28;
+$bgcolor1: #f3f3f1;
+$bgcolor2: #dddddb;
+$bluebg: #3465a4;
+$headerbg: #3465a4;
+$graybg: #d0d0cd;
+$greenbg: #69ad42;
+$redbg: #cf4740;
+$yellowbg: #c6bd28;
 
-@blacktext: #252a2b;
-@headertext: #f4f4f3;
-@linktext: #166fe0;
-@whitetext: #f4f4f3;
+$blacktext: #252a2b;
+$headertext: #f4f4f3;
+$linktext: #166fe0;
+$whitetext: #f4f4f3;
 
-@blueborder: #182f4c;
-@grayborder: #babdb6;
-@greenborder: #355721;
-@redborder: #782925;
-@yellowborder: #6f6a1d;
+$blueborder: #182f4c;
+$grayborder: #babdb6;
+$greenborder: #355721;
+$redborder: #782925;
+$yellowborder: #6f6a1d;
 
 /* Apply a CSS-reset
  * http://meyerweb.com/eric/tools/css/reset/
@@ -99,10 +99,10 @@ html {
     height: 100%;
 }
 body {
-    background-color: @bgcolor2;
-    background-image: linear-gradient(to bottom, @bgcolor1, @bgcolor2 300px);
+    background-color: $bgcolor2;
+    background-image: linear-gradient(to bottom, $bgcolor1, $bgcolor2 300px);
     background-repeat: no-repeat;
-    color: @blacktext;
+    color: $blacktext;
     font: 100%/1.4 "Source Sans Pro", sans-serif;
     height: 100%;
     margin-top: 74px;
@@ -115,8 +115,8 @@ div#top {
     z-index: 1;
 }
 div#top > header {
-    background-color: @headerbg;
-    color: @headertext;
+    background-color: $headerbg;
+    color: $headertext;
     height: 37px;
 }
 div#top > header h1 {
@@ -147,7 +147,7 @@ div#top > nav a {
     width: 25%;
 }
 footer {
-    border-top: 1px solid @grayborder;
+    border-top: 1px solid $grayborder;
     font-size: 0.7em;
     margin: 0.2em 0.5em;
 }
@@ -157,10 +157,10 @@ section {
     padding: 0.2em 0;
 }
 section.green {
-    background-color: @greenbg;
+    background-color: $greenbg;
 }
 section.red {
-    background-color: @redbg;
+    background-color: $redbg;
 }
 section.hidden {
     display: none;
@@ -170,7 +170,7 @@ section p {
     text-align: left;
 }
 section img {
-    border: 1px solid @grayborder;
+    border: 1px solid $grayborder;
     border-radius: 0.5em;
     margin: 0.2em 0;
 }
@@ -184,7 +184,7 @@ section ul.listing li {
     padding: 0;
 }
 section ul.listing li:nth-child(odd) {
-    background-color: @graybg;
+    background-color: $graybg;
 }
 section ul.listing li > a {
     display: block;
@@ -198,7 +198,7 @@ form li {
     display: table-row;
 }
 form li:hover {
-    background: @graybg;
+    background: $graybg;
 }
 form label,
 form span {
@@ -207,7 +207,7 @@ form span {
     vertical-align: middle;
 }
 form label {
-    border-right: 1px solid @grayborder;
+    border-right: 1px solid $grayborder;
     text-align: right;
 }
 form span {
@@ -216,7 +216,7 @@ form span {
 
 /* Text styles */
 a {
-    color: @linktext;
+    color: $linktext;
 }
 em {
     font-style: italic;
@@ -251,10 +251,10 @@ dd {
 button,
 a.button,
 nav a {
-    background: @bluebg;
-    border: 1px solid @blueborder;
+    background: $bluebg;
+    border: 1px solid $blueborder;
     border-radius: 0.4em;
-    color: @whitetext;
+    color: $whitetext;
     display: block;
     padding: 0.3em 0.5em;
     text-align: center;
@@ -264,12 +264,12 @@ nav a {
 button:hover, button:active,
 a.button:hover, a.button:active,
 nav a:hover, nav a:active {
-    background-color: lighten(@bluebg, 10%);
+    background-color: lighten($bluebg, 10%);
     cursor: pointer;
 }
 button.active,
 a.button.active {
-    background-color: @greenbg;
-    border-color: @greenborder;
+    background-color: $greenbg;
+    border-color: $greenborder;
     cursor: default;
 }
