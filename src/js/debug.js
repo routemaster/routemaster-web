@@ -1,6 +1,7 @@
-/*global window, Backbone, _, $, console*/
-$(function() {
+/*global require, _, Backbone*/
+require([], function() {
     "use strict";
+    $(function() {
 
     var GpsTracker = Backbone.Model.extend({
         defaults: {
@@ -110,4 +111,4 @@ $(function() {
         // kick things off
         var gpsView = new GpsView();
     }());
-});
+});});
