@@ -96,6 +96,26 @@ table {
 }
 /* End of CSS-reset */
 
+/* Mixins */
+@mixin text-inset($base-color) {
+    /* Makes text appear to be engraved into its background */
+    color: $base-color;
+    @if lightness($base-color) > 30% {
+        text-shadow: black 0px -1px;
+    } @else {
+        text-shadow: white 0px 1px;
+    }
+}
+@mixin text-outset($base-color) {
+    /* Makes text appear to be sitting on top of its background */
+    color: $base-color;
+    @if lightness($base-color) > 30% {
+        text-shadow: black 0px 1px;
+    } @else {
+        text-shadow: white 0px -1px;
+    }
+}
+
 /* Page styles */
 html {
     height: 100%;
@@ -117,7 +137,7 @@ div#top {
 }
 div#top > header {
     background-color: $headerbg;
-    color: $headertext;
+    @include text-inset($headertext);
     height: 37px;
 }
 div#top > header h1 {
@@ -216,7 +236,7 @@ form span {
 }
 .inverted {
     background-color: $darkbg;
-    color: $lighttext;
+    @include text-inset($lighttext);
 }
 
 /* Text styles */
@@ -259,7 +279,7 @@ nav a {
     background: $bluebg;
     border: 1px solid $blueborder;
     border-radius: 0.4em;
-    color: $whitetext;
+    @include text-inset($whitetext);
     display: block;
     padding: 0.3em 0.5em;
     text-align: center;
