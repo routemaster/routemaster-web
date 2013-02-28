@@ -170,7 +170,7 @@ section p {
     padding: 0.2em 0.5em;
     text-align: left;
 }
-section img {
+section > img {
     border: 1px solid $grayborder;
     border-radius: 0.5em;
     margin: 0.2em 0;
