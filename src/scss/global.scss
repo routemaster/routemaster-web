@@ -262,7 +262,8 @@ nav a {
 }
 button:hover, button:active,
 a.button:hover, a.button:active,
-nav a:hover, nav a:active {
+nav a:hover, nav a:active,
+a.active {
     background-color: lighten($bluebg, 10%);
     cursor: pointer;
 }
