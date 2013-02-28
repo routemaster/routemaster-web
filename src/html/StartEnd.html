@@ -3,37 +3,49 @@
 <head>
   <meta charset="utf-8">
   <title>Start/End Debug Page - RouteMaster</title>
+  <link href="css/global.css" rel="stylesheet" type="text/css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="text/javascript" src="js/zepto.min.js"></script>
   <script type="text/javascript" src="js/underscore-min.js"></script>
   <script type="text/javascript" src="js/backbone-min.js"></script>
   <script type="text/javascript" src="js/StartEnd.js"></script>
 </head>
 <body>
+  <div id="top">
+    <header>
+      <h1 id="logo"><img src="img/routemaster-white.png" width="144" height="28" alt="RouteMaster"></h1>
+    </header>
+    <nav>
+      <a id="go-track" class="active" href="">Track</a>
+      <a id="go-history" href="">History</a>
+      <a id="go-friends" href="">Friends</a>
+      <a id="go-leaderboards" href="">Leaders</a>
+    </nav>
+  </div>
+  <section>
   <div id="gps-status"></div>
-
-  <!-- Templates -->
   <script type="text/template" id="gps-status-tmpl">
     <% if(isTracking) { %>
-      <p id="status"><%- formatTime(Date.now() - startTime) %></p>
-      <p id="position">
+      <dl id="position" class="inverted">
+        <dt>Time:</dt><dd id="status"><%- formatTime(Date.now() - startTime) %></dd>
         <% if(position === undefined) { %>
-          Waiting for Location
+          <p>Waiting for Location</p>
         <% } else { %>
-          Latitude: <%- position.coords.latitude %>,
-          Longitude: <%- position.coords.longitude %>
+        <dt>Latitude:</dt><dd><%- position.coords.latitude %></dd>
+        <dt>Longitude:</dt><dd><%- position.coords.longitude %></dd>
         <% } %>
-      </p>
+      </dl>
     <% } else { %>
-      <p id="status">Press "Start" to Begin</p>
+      <p id="status">Press "Start" to begin.</p>
     <% } %>
     <p>
-      <button id="start-button" <% if(isTracking) { %> disabled <% } %>>
-        Start
-      </button>
-      <button id="stop-button" <% if(!isTracking) { %> disabled <% } %>>
-        End
-      </button>
+      <button type="button" id="start-button" <% if(isTracking) { %> disabled <% } %>>Start</button>
+      <button type="button" id="stop-button" <% if(!isTracking) { %> disabled <% } %>>End</button>
     </p>
   </script>
+  </section>
+  <section>
+    <p style="text-align: right;"><a href="demo.html">Skip to sample map screen</a></p>
+  </section>
 </body>
 </html>
