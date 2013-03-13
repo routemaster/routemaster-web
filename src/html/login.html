@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>RouteMaster</title>
   <link href="css/global.css" rel="stylesheet" type="text/css">
+  <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="text/javascript" src="js/zepto.min.js"></script>
   <script type="text/javascript">
@@ -27,14 +28,13 @@
 <body>
   <div id="top">
     <header>
-      <button id="menu-button" type="button">Menu</button>
-      <h1 id="logo"><img src="img/routemaster-white.png" width="144" height="28" alt="RouteMaster"></h1>
+      <h1 id="logo"><img src="img/routemaster-titlebar.png" width="144" height="28" alt="RouteMaster"></h1>
     </header>
     <nav>
-      <a id="go-track" href="">Track</a>
-      <a id="go-history" href="">History</a>
-      <a id="go-friends" href="">Friends</a>
-      <a id="go-leaderboards" href="">Leaderboards</a>
+      <a id="go-track" href=""><i class="icon-dashboard"></i><br>Track</a>
+      <a id="go-history" href=""><i class="icon-tasks"></i><br>History</a>
+      <a id="go-friends" href=""><i class="icon-user"></i><br>Friends</a>
+      <a id="go-leaderboards" href=""><i class="icon-bar-chart"></i><br>Leaders</a>
     </nav>
   </div>
   <section id="select-provider">
@@ -49,7 +49,7 @@
     </ul>
   </section>
   <section id="form-facebook" class="hidden">
-    <h1>Log in with <strong>Facebook</strong></h1>
+    <!--h1>Log in with <strong>Facebook</strong></h1-->
     <form id="login-form">
       <ul>
         <li>
@@ -68,7 +68,7 @@
     </form>
   </section>
   <section id="form-twitter" class="hidden">
-    <h1>Log in with <strong>Twitter</strong></h1>
+    <!--h1>Log in with <strong>Twitter</strong></h1-->
     <form id="login-form">
       <ul>
         <li>
@@ -87,7 +87,7 @@
     </form>
   </section>
   <section id="form-openid" class="hidden">
-    <h1>Log in with <strong>OpenID</strong></h1>
+    <!--h1>Log in with <strong>OpenID</strong></h1-->
     <form id="login-form">
       <ul>
         <li>
