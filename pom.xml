@@ -38,6 +38,12 @@
                     <include>js/**</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>${basedir}/share</directory>
+                <includes>
+                    <include>font/**</include>
+                </includes>
+            </resource>
         </resources>
 
         <plugins>
