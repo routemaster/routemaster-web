@@ -5,32 +5,41 @@
   <title>RouteMaster</title>
   <link href="css/global.css" rel="stylesheet" type="text/css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+  <!--[if lte IE 8]>
+       <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+        <![endif]-->
+  <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+  <script>
+    window.onload=function(){
+      var map = L.map('map').setView([29.648335, -82.344444], 17);
+      L.tileLayer('http://{s}.tile.cloudmade.com/224368f2fecd4d6ea1220606add67f43/997/256/{z}/{x}/{y}.png', {
+          attribution: '',
+	      maxZoom: 18
+	      }).addTo(map);
+      var marker = L.marker([29.648335, -82.344444]).addTo(map);
+      var line = L.polygon([[29.648335, -82.344444], [29.649085, -82.344965]]).addTo(map);
+      var line = L.polygon([[29.649085, -82.344965], [29.64999, -82.344455]]).addTo(map);
+    }
+  </script>
 </head>
 <body>
   <div id="top">
     <header>
-      <button id="menu-button" type="button">Menu</button>
-      <h1 id="logo"><img src="img/routemaster-white.png" width="144" height="28" alt="RouteMaster"></h1>
+      <h1 id="logo"><img src="img/routemaster-titlebar.png" width="144" height="28" alt="RouteMaster"></h1>
     </header>
     <nav>
-      <a id="go-track" href="">Track</a>
+      <a id="go-track" class="active" href="">Track</a>
       <a id="go-history" href="">History</a>
       <a id="go-friends" href="">Friends</a>
-      <a id="go-leaderboards" href="">Leaderboards</a>
+      <a id="go-leaderboards" href="">Leaders</a>
     </nav>
   </div>
   <section>
-    <h1>This page is empty</h1>
-    <p>This is a <strong>paragraph</strong>. It's got quite a bit of text in
-    it. Our app probably won't have very many large blocks of text like this.
-    </p>
-  <section class="green">
-    <p>This paragraph is in a <strong>green section</strong>.</p>
-  </section>
-    <p>Here's an example of what the map might end up looking like:</p>
-    <img src="img/map-tile-200x200.png" width="200" height="200" alt="map">
+    <p>You are walking from <strong>Leigh Hall</strong>.</p>
+    <div id="map"></div>
     <h2>Current scores</h2>
-    <dl>
+    <dl class="inverted">
       <dt>Efficiency</dt>
       <dd>90.5</dd>
       <dt>Exploration</dt>
