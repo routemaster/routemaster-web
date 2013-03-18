@@ -6,28 +6,28 @@
     font-style: normal;
     font-weight: 400;
     src: local('Source Code Pro'), local('SourceCodePro-Regular'),
-         url('../img/SourceCodePro400.ttf') format('truetype');
+         url('../font/SourceCodePro400.ttf') format('truetype');
 }
 @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
     font-weight: 400;
     src: local('Source Sans Pro'), local('SourceSansPro-Regular'),
-         url('../img/SourceSansPro400.ttf') format('truetype');
+         url('../font/SourceSansPro400.ttf') format('truetype');
 }
 @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
     font-weight: 600;
     src: local('Source Sans Pro Semibold'), local('SourceSansPro-Semibold'),
-         url('../img/SourceSansPro600.ttf') format('truetype');
+         url('../font/SourceSansPro600.ttf') format('truetype');
 }
 @font-face {
     font-family: 'Source Sans Pro';
     font-style: normal;
     font-weight: 700;
     src: local('Source Sans Pro Bold'), local('SourceSansPro-Bold'),
-         url('../img/SourceSansPro700.ttf') format('truetype');
+         url('../font/SourceSansPro700.ttf') format('truetype');
 }
 
 /* Colors */
@@ -39,11 +39,13 @@ $graybg: #d0d0cd;
 $greenbg: #69ad42;
 $redbg: #cf4740;
 $yellowbg: #c6bd28;
+$darkbg: #25383f;
 
 $blacktext: #252a2b;
 $headertext: #f4f4f3;
 $linktext: #166fe0;
 $whitetext: #f4f4f3;
+$lighttext: #eeeeec;
 
 $blueborder: #182f4c;
 $grayborder: #babdb6;
@@ -94,6 +96,26 @@ table {
 }
 /* End of CSS-reset */
 
+/* Mixins */
+@mixin text-inset($base-color) {
+    /* Makes text appear to be engraved into its background */
+    color: $base-color;
+    @if lightness($base-color) > 30% {
+        text-shadow: black 0px -1px;
+    } @else {
+        text-shadow: white 0px 1px;
+    }
+}
+@mixin text-outset($base-color) {
+    /* Makes text appear to be sitting on top of its background */
+    color: $base-color;
+    @if lightness($base-color) > 30% {
+        text-shadow: black 0px 1px;
+    } @else {
+        text-shadow: white 0px -1px;
+    }
+}
+
 /* Page styles */
 html {
     height: 100%;
@@ -104,7 +126,6 @@ body {
     background-repeat: no-repeat;
     color: $blacktext;
     font: 100%/1.4 "Source Sans Pro", sans-serif;
-    height: 100%;
     margin-top: 74px;
     text-align: center;
 }
@@ -112,11 +133,11 @@ div#top {
     position: fixed;
     top: 0;
     width: 100%;
-    z-index: 1;
+    z-index: 9001;
 }
 div#top > header {
     background-color: $headerbg;
-    color: $headertext;
+    @include text-inset($headertext);
     height: 37px;
 }
 div#top > header h1 {
@@ -133,6 +154,7 @@ div#top > header #menu-button {
     top: 0.2em;
 }
 div#top > nav {
+    border-collapse: collapse;
     display: table;
     height: 37px;
     width: 100%;
@@ -141,9 +163,10 @@ div#top > nav a {
     border-radius: 0;
     display: table-cell;
     font-size: 0.8em;
-    line-height: 35px;
+    line-height: 1;
     padding: 0;
     text-decoration: none;
+    vertical-align: middle;
     width: 25%;
 }
 footer {
@@ -169,7 +192,7 @@ section p {
     padding: 0.2em 0.5em;
     text-align: left;
 }
-section img {
+section > img {
     border: 1px solid $grayborder;
     border-radius: 0.5em;
     margin: 0.2em 0;
@@ -212,6 +235,10 @@ form label {
 }
 form span {
     text-align: left;
+}
+.inverted {
+    background-color: $darkbg;
+    @include text-inset($lighttext);
 }
 
 /* Text styles */
@@ -261,9 +288,18 @@ nav a {
     text-decoration: none;
     text-shadow: black 0 0 2px;
 }
+nav a {
+    background: $darkbg;
+    border-color: black;
+    @include text-inset($whitetext);
+}
+nav a.active {
+    background-color: $bluebg;
+}
 button:hover, button:active,
 a.button:hover, a.button:active,
-nav a:hover, nav a:active {
+nav a:hover, nav a:active,
+a.active {
     background-color: lighten($bluebg, 10%);
     cursor: pointer;
 }
@@ -272,4 +308,10 @@ a.button.active {
     background-color: $greenbg;
     border-color: $greenborder;
     cursor: default;
+}
+
+/* Leaflet Map*/
+#map {
+    height: 240px;
+    margin: 0.2em 0;
 }

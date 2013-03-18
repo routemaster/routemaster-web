@@ -34,7 +34,14 @@
             <resource>
                 <directory>${basedir}/lib</directory>
                 <includes>
+                    <include>css/**</include>
                     <include>js/**</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/share</directory>
+                <includes>
+                    <include>font/**</include>
                 </includes>
             </resource>
         </resources>
