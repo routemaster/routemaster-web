@@ -1,4 +1,4 @@
-/*global window, Backbone, _, $, console*/
+/*global window, Backbone, _, $, console, L*/
 $(function() {
     "use strict";
 
@@ -9,7 +9,10 @@ $(function() {
             updatedTime: undefined,
             watchPositionId: undefined, // unique id given by watchPosition()
             position: undefined,
-            lastError: undefined
+            lastError: undefined,
+            efficiency: undefined,
+            distance: undefined,
+            map: undefined
         },
 
         initialize: function() {
@@ -21,6 +24,18 @@ $(function() {
         startTracking: function() {
             var now = Date.now();
             if(this.get("isTracking")) { return; }
+            var osmUrl = 'http://{s}.tile.openstreeetmap.org/{z}/{x}/{y}.png';
+            var osmAttrib = 'Map data © OpenStreetMap contributors';
+            var osm = L.TileLayer(osmUrl, {
+                attribution: osmAttrib,
+                maxZoom: 12,
+                minZoom: 8
+            });
+            var map = L.Map('map', {
+                layers: [osm],
+                zoom: 12,
+                center: [51.505, -0.09]
+            });
             this.set({
                 isTracking: true,
                 startTime: now,
@@ -30,7 +45,10 @@ $(function() {
                     _.bind(this.updatePosition, this),
                     _.bind(this.updatePositionError, this),
                     {enableHighAccuracy: true}
-                )
+                ),
+                efficiency: 91,
+                distance: 0.7,
+                map: map
             });
         },
 
@@ -57,7 +75,7 @@ $(function() {
         GpsView = Backbone.View.extend({
 
         el: $("#gps-status"),
-        template: _.template($("#gps-status-tmpl").html()),
+        template: _.template($("#status-tmpl").html()),
         model: new GpsTracker(),
         events: {
             "click #start-button": "startTracking",

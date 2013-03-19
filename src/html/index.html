@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>RouteMaster</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="css/global.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+  <!--[if lte IE 8]>
+       <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+        <![endif]-->
+  <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+  <script type="text/javascript" src="js/zepto.min.js"></script>
+  <script type="text/javascript" src="js/underscore-min.js"></script>
+  <script type="text/javascript" src="js/backbone-min.js"></script>
+  <script type="text/javascript" src="js/StartEnd.js"></script>
+</head>
+<body>
+  <div id="top">
+    <header>
+      <h1 id="logo"><img src="img/routemaster-titlebar.png" width="144" height="28" alt="RouteMaster"></h1>
+    </header>
+    <nav>
+      <a id="go-track" class="active" href="">Track</a>
+      <a id="go-history" href="">History</a>
+      <a id="go-friends" href="">Friends</a>
+      <a id="go-leaderboards" href="">Leaders</a>
+    </nav>
+  </div>
+  <div id="gps-status"></div>
+  <footer>
+    <p>© 2013 RouteMaster</p>
+  </footer>
+
+<!-- ALL OF THE ...                             -->
+<!--                                            -->
+<!--   *   )                 (         )        -->
+<!-- ` )  /(  (    )         )\   ) ( /(  (     -->
+<!--  ( )(_))))\  (    `  ) ((_| /( )\())))\(   -->
+<!-- (_(_())/((_) )\  '/(/(  _ )(_)|_))//((_)\  -->
+<!-- |_   _(_)) _((_))((_)_\| ((_)_| |_(_))((_) -->
+<!--   | | / -_) '  \() '_ \) / _` |  _/ -_|_-< -->
+<!--   |_| \___|_|_|_|| .__/|_\__,_|\__\___/__/ -->
+<!--                  |_|                       -->
+<!--                                            -->
+
+  <script type="text/template" id="status-tmpl">
+    <p>
+      <button type="button" id="start-button" <% if(isTracking) { %>
+        disabled <% } %>>Start</button>
+      <button type="button" id="stop-button" <% if(!isTracking) { %>
+        disabled <% } %>>End</button>
+    </p>
+    <% if(isTracking) { %>
+      <dl class="inverted">
+        <dt>Time</dt><dd><%- formatTime(Date.now() - startTime) %></dd>
+        <% if(position === undefined) { %>
+          <p>Waiting for Location</p>
+        <% } else { %>
+        <dt>Latitude</dt><dd><%- position.coords.latitude %></dd>
+        <dt>Longitude</dt><dd><%- position.coords.longitude %></dd>
+        <dt>Efficiency</dt><dd><%- efficiency %></dd>
+        <dt>Distance</dt><dd><%- distance %></dd>
+        <% } %>
+      </dl>
+    <% } else { %>
+      <p>Press "Start" to begin.</p>
+    <% } %>
+    <div id="map"></div>
+  </script>
+</body>
+</html>
