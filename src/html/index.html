@@ -143,10 +143,10 @@
 
 <script type="text/template" id="list-templ">
     <h1>Nearby popular paths</h1>
-	    <ul class="listing">
-<% for each(listing){
-      <li><a href=""> </a></li>
-<% }
+        <ul class="listing">
+<% for(path in listing){ %>
+        <li><a href="">path</a></li>
+<% } %>
 </ul>
 </script>
 
