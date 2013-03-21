@@ -142,12 +142,18 @@
 </script>
 
 <script type="text/template" id="list-templ">
-    <h1>Nearby popular paths</h1>
-        <ul class="listing">
-<% for(int i = 0; i < path.size(); i++){ %>
-        <li><a href="">path</a></li>
-<% } %>
-</ul>
+  <section>
+    <h1><%- listTitle %></h1>
+  <% if(listItems.size() > 0) { %>
+    <ul class="listing">
+    <% for(int i = 0; i < listItems.size(); i++) { %>
+      <li><a href="<%- listItems[i].url %>"><%- listItems[i].name %></a></li>
+    <% } %>
+    </ul>
+  <% } else {%>
+    <p>Nothing to see here… move along.</p>
+  <% } %>
+  </section>
 </script>
 
 </body>
