@@ -1,4 +1,4 @@
-/*global window, Backbone, _, $, console, L*/
+/*global window, Backbone, _, $, console, L, Mustache*/
 $(function() {
     "use strict";
 
@@ -117,7 +117,7 @@ $(function() {
     GpsView = Backbone.View.extend({
 
         el: $("#gps-status"),
-        template: _.template($("#status-tmpl").html()),
+        template: Mustache.compile($("#status-tmpl").html()),
         model: new GpsTracker(),
         events: {
             "click #start-button": "startTracking",
@@ -134,7 +134,8 @@ $(function() {
 
         render: function() {
             var state = _.extend(_.clone(this.model.attributes), {
-                formatTime: _.bind(this.formatTime, this)
+                formattedTime:
+                    this.formatTime(Date.now() - this.model.get("startTime"))
             });
             this.$el.html(this.template(state));
             if(this.model.get("isTracking")) {
@@ -155,7 +156,7 @@ $(function() {
             });
         },
 
-        defaultTimeTemplate: _.template("<%= hrs %>:<%= min %>:<%= sec %>"),
+        defaultTimeTemplate: Mustache.compile("{{hrs}}:{{min}}:{{sec}}"),
 
         startTracking: function() {
             this.model.startTracking();
