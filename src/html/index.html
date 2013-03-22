@@ -13,6 +13,7 @@
   <script type="text/javascript" src="js/zepto.min.js"></script>
   <script type="text/javascript" src="js/underscore-min.js"></script>
   <script type="text/javascript" src="js/backbone-min.js"></script>
+  <script type="text/javascript" src="js/mustache.js"></script>
   <script type="text/javascript" src="js/StartEnd.js"></script>
 </head>
 <body>
@@ -47,26 +48,30 @@
 <script type="text/template" id="status-tmpl">
   <section>
     <p>
-      <button type="button" id="start-button" <% if(isTracking) { %>
-        disabled <% } %>>Start</button>
-      <button type="button" id="stop-button" <% if(!isTracking) { %>
-        disabled <% } %>>End</button>
+      <button type="button" id="start-button"
+        {{#isTracking}}disabled{{/isTracking}}>Start</button>
+      <button type="button" id="stop-button"
+        {{^isTracking}}disabled{{/isTracking}}>End</button>
     </p>
-    <% if(isTracking) { %>
-      <dl class="inverted">
-        <dt>Time</dt><dd><%- formatTime(Date.now() - startTime) %></dd>
-        <% if(position === undefined) { %>
+    {{#isTracking}}
+      <div class="inverted">
+        <dl>
+          <dt>Time</dt><dd>{{{formattedTime}}}</dd>
+          {{#position}}
+            <dt>Latitude</dt><dd>{{position.coords.latitude}}</dd>
+            <dt>Longitude</dt><dd>{{position.coords.longitude}}</dd>
+            <dt>Efficiency</dt><dd>{{score}}</dd>
+            <dt>Distance</dt><dd>{{totalDist}}</dd>
+          {{/position}}
+        </dl>
+        {{^position}}
           <p>Waiting for Location</p>
-        <% } else { %>
-        <dt>Latitude</dt><dd><%- position.coords.latitude %></dd>
-        <dt>Longitude</dt><dd><%- position.coords.longitude %></dd>
-        <dt>Efficiency</dt><dd><%- score %></dd>
-        <dt>Distance</dt><dd><%- totalDist %></dd>
-        <% } %>
-      </dl>
-    <% } else { %>
+        {{/position}}
+      </div>
+    {{/isTracking}}
+    {{^isTracking}}
       <p>Press "Start" to begin.</p>
-    <% } %>
+    {{/isTracking}}
     <div id="map"></div>
   </section>
 </script>
@@ -83,76 +88,75 @@
         <strong>OpenID</strong></a></li>
     </ul>
   </section>
-<% if(loginProvider == 'facebook') { %>
-  <section id="form-facebook" class="hidden">
-    <form id="login-form">
-      <ul>
-        <li>
-          <label for="login-id">Username</label>
-          <span><input id="login-id" type="text"></span>
-        </li>
-        <li>
-          <label for="login-password">Password</label>
-          <span><input id="login-password" type="password"></span>
-        </li>
-        <li>
-          <label>&nbsp;</label>
-          <span><button id="login-submit" type="submit">Log in</button></span>
-        </li>
-      </ul>
-    </form>
-  </section>
-<% } else if(loginProvider == 'twitter') { %>
-  <section id="form-twitter" class="hidden">
-    <form id="login-form">
-      <ul>
-        <li>
-          <label for="login-id">Username</label>
-          <span><input id="login-id" type="text"></span>
-        </li>
-        <li>
-          <label for="login-password">Password</label>
-          <span><input id="login-password" type="password"></span>
-        </li>
-        <li>
-          <label>&nbsp;</label>
-          <span><button id="login-submit" type="submit">Log in</button></span>
-        </li>
-      </ul>
-    </form>
-  </section>
-<% } else if(loginProvider == 'openid') { %>
-  <section id="form-openid" class="hidden">
-    <form id="login-form">
-      <ul>
-        <li>
-          <label for="login-id">Identifier</label>
-          <span><input id="login-id" type="text"></span>
-        </li>
-        <li>
-          <label>&nbsp;</label>
-          <span><button id="login-submit" type="submit">Log in</button></span>
-        </li>
-      </ul>
-    </form>
-  </section>
-<% } else { %>
-  <p>Invalid login provider?!?</p>
-<% } %>
+  {{#facebook}}
+    <section id="form-facebook" class="hidden">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label for="login-id">Username</label>
+            <span><input id="login-id" type="text"></span>
+          </li>
+          <li>
+            <label for="login-password">Password</label>
+            <span><input id="login-password" type="password"></span>
+          </li>
+          <li>
+            <label>&nbsp;</label>
+            <span><button id="login-submit" type="submit">Log in</button></span>
+          </li>
+        </ul>
+      </form>
+    </section>
+  {{/facebook}}
+  {{#twitter}}
+    <section id="form-twitter" class="hidden">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label for="login-id">Username</label>
+            <span><input id="login-id" type="text"></span>
+          </li>
+          <li>
+            <label for="login-password">Password</label>
+            <span><input id="login-password" type="password"></span>
+          </li>
+          <li>
+            <label>&nbsp;</label>
+            <span><button id="login-submit" type="submit">Log in</button></span>
+          </li>
+        </ul>
+      </form>
+    </section>
+  {{/twitter}}
+  {{#openid}}
+    <section id="form-openid" class="hidden">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label for="login-id">Identifier</label>
+            <span><input id="login-id" type="text"></span>
+          </li>
+          <li>
+            <label>&nbsp;</label>
+            <span><button id="login-submit" type="submit">Log in</button></span>
+          </li>
+        </ul>
+      </form>
+    </section>
+  {{/openid}}
 </script>
 
 <script type="text/template" id="list-templ">
   <section>
-    <h1><%- listTitle %></h1>
-  <% if(listItems.size() > 0) { %>
+    <h1>{{title}}</h1>
     <ul class="listing">
-    <% for(int i = 0; i < listItems.size(); i++) { %>
-      <li><a href="<%- listItems[i].url %>"><%- listItems[i].name %></a></li>
-    <% } %>
+      {{#items}}
+        <li><a href="{{url}}">{{name}}</a></li>
+      {{/items}}
     </ul>
-  <% } else {%>
-    <p>Nothing to see here… move along.</p>
-  <% } %>
+    {{^items}}
+      <p>Nothing to see here&hellip; move along.</p>
+    {{/items}}
   </section>
 </script>
 
