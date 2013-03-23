@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>RouteMaster</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1,
+                                 maximum-scale=1, user-scalable=no">
+  <meta name="HandheldFriendly" content="true">
+  <link href="css/global.css" rel="stylesheet" type="text/css">
+  <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+  <!--[if lte IE 8]>
+       <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+        <![endif]-->
+  <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
+  <script type="text/javascript" src="js/zepto.min.js"></script>
+  <script type="text/javascript" src="js/underscore-min.js"></script>
+  <script type="text/javascript" src="js/backbone-min.js"></script>
+  <script type="text/javascript" src="js/mustache.js"></script>
+  <script type="text/javascript" src="js/StartEnd.js"></script>
+</head>
+<body>
+  <div id="top">
+    <header>
+      <h1 id="logo"><img src="img/routemaster-titlebar.png" width="144" height="28" alt="RouteMaster"></h1>
+    </header>
+    <nav>
+      <a id="go-track" href=""><i class="icon-dashboard"></i><br>Track</a>
+      <a id="go-history" href=""><i class="icon-tasks"></i><br>History</a>
+      <a id="go-friends" href=""><i class="icon-user"></i><br>Friends</a>
+      <a id="go-leaderboards" href=""><i class="icon-bar-chart"></i><br>Leaders</a>
+    </nav>
+  </div>
+  <div id="map"></div>
+  <div id="gps-status"></div>
+  <footer>
+    <p>© 2013 RouteMaster</p>
+  </footer>
+
+<!-- ALL OF THE ...                             -->
+<!--                                            -->
+<!--   *   )                 (         )        -->
+<!-- ` )  /(  (    )         )\   ) ( /(  (     -->
+<!--  ( )(_))))\  (    `  ) ((_| /( )\())))\(   -->
+<!-- (_(_())/((_) )\  '/(/(  _ )(_)|_))//((_)\  -->
+<!-- |_   _(_)) _((_))((_)_\| ((_)_| |_(_))((_) -->
+<!--   | | / -_) '  \() '_ \) / _` |  _/ -_|_-< -->
+<!--   |_| \___|_|_|_|| .__/|_\__,_|\__\___/__/ -->
+<!--                  |_|                       -->
+<!--                                            -->
+
+<script type="text/template" id="status-tmpl">
+  <section>
+    <p>
+      <button type="button" id="start-button"
+        {{#isTracking}}disabled{{/isTracking}}>Start</button>
+      <button type="button" id="stop-button"
+        {{^isTracking}}disabled{{/isTracking}}>End</button>
+    </p>
+    {{#isTracking}}
+      <div class="inverted">
+        <dl>
+          <dt>Time</dt><dd>{{{formattedTime}}}</dd>
+          {{#position}}
+            <dt>Latitude</dt><dd>{{position.coords.latitude}}</dd>
+            <dt>Longitude</dt><dd>{{position.coords.longitude}}</dd>
+            <dt>Efficiency</dt><dd>{{score}}</dd>
+            <dt>Distance</dt><dd>{{totalDist}}</dd>
+          {{/position}}
+        </dl>
+        {{^position}}
+          <p>Waiting for Location</p>
+        {{/position}}
+      </div>
+    {{/isTracking}}
+    {{^isTracking}}
+      <p>Press "Start" to begin.</p>
+    {{/isTracking}}
+  </section>
+</script>
+
+<script type="text/template" id="login-tmpl">
+  <section id="select-provider">
+    <h1>Welcome!</h1>
+    <ul class="vertical-buttons">
+      <li><a id="with-facebook" href="#facebook" class="button">Log in with
+        <strong>Facebook</strong></a></li>
+      <li><a id="with-twitter" href="#twitter" class="button">Log in with
+        <strong>Twitter</strong></a></li>
+      <li><a id="with-openid" href="#openid" class="button">Log in with
+        <strong>OpenID</strong></a></li>
+    </ul>
+  </section>
+  {{#facebook}}
+    <section id="form-facebook" class="hidden">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label for="login-id">Username</label>
+            <span><input id="login-id" type="text"></span>
+          </li>
+          <li>
+            <label for="login-password">Password</label>
+            <span><input id="login-password" type="password"></span>
+          </li>
+          <li>
+            <label>&nbsp;</label>
+            <span><button id="login-submit" type="submit">Log in</button></span>
+          </li>
+        </ul>
+      </form>
+    </section>
+  {{/facebook}}
+  {{#twitter}}
+    <section id="form-twitter" class="hidden">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label for="login-id">Username</label>
+            <span><input id="login-id" type="text"></span>
+          </li>
+          <li>
+            <label for="login-password">Password</label>
+            <span><input id="login-password" type="password"></span>
+          </li>
+          <li>
+            <label>&nbsp;</label>
+            <span><button id="login-submit" type="submit">Log in</button></span>
+          </li>
+        </ul>
+      </form>
+    </section>
+  {{/twitter}}
+  {{#openid}}
+    <section id="form-openid" class="hidden">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label for="login-id">Identifier</label>
+            <span><input id="login-id" type="text"></span>
+          </li>
+          <li>
+            <label>&nbsp;</label>
+            <span><button id="login-submit" type="submit">Log in</button></span>
+          </li>
+        </ul>
+      </form>
+    </section>
+  {{/openid}}
+</script>
+
+<script type="text/template" id="list-templ">
+  <section>
+    <h1>{{title}}</h1>
+    <ul class="listing">
+      {{#items}}
+        <li><a href="{{url}}">{{name}}</a></li>
+      {{/items}}
+    </ul>
+    {{^items}}
+      <p>Nothing to see here&hellip; move along.</p>
+    {{/items}}
+  </section>
+</script>
+
+</body>
+</html>
