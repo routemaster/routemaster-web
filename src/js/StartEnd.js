@@ -23,10 +23,12 @@ $(function() {
         },
 
         startTracking: function() {
-            var now = Date.now();
             if(this.get("isTracking")) { return; }
-            var osmUrl = 'http://{s}.tile.openstreeetmap.org/{z}/{x}/{y}.png';
-            var osmAttrib = 'Map data © OpenStreetMap contributors';
+
+            var now = Date.now(),
+                osmUrl = 'http://{s}.tile.openstreeetmap.org/{z}/{x}/{y}.png',
+                osmAttrib = 'Map data © OpenStreetMap contributors';
+
             var osm = L.TileLayer(osmUrl, {
                 attribution: osmAttrib,
                 maxZoom: 12,
@@ -37,6 +39,7 @@ $(function() {
                 zoom: 12,
                 center: [51.505, -0.09]
             });
+
             this.set({
                 isTracking: true,
                 startTime: now,
@@ -77,22 +80,23 @@ $(function() {
         // This calculation works on a spherical assumption, see haversine
         // formula
         calcDist: function(pos1, pos2) {
-            var lat1 = pos1.coords.latitude;
-            var lat2 = pos2.coords.latitude;
-            var lon1 = pos1.coords.longitude;
-            var lon2 = pos2.coords.longitude;
+            var lat1 = pos1.coords.latitude,
+                lat2 = pos2.coords.latitude,
+                lon1 = pos1.coords.longitude,
+                lon2 = pos2.coords.longitude,
 
-            var R = 6371; // radius of earth in km
-            var dLat = (lat2 - lat1).toRad();
-            var dLon = (lon2 - lon1).toRad();
+                R = 6371, // radius of earth in km
+                dLat = (lat2 - lat1).toRad(),
+                dLon = (lon2 - lon1).toRad();
+
             lat1 = lat1.toRad();
             lat2 = lat2.toRad();
 
             var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                     Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) *
-                    Math.cos(lat2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            var d = R * c;
+                    Math.cos(lat2),
+                c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
+                d = R * c;
             return d;
         },
 
@@ -112,9 +116,9 @@ $(function() {
             this.set("score", 100 * (straightDist / totalDist) *
                                     (straightDist / totalDist));
         }
-    }),
+    });
 
-    GpsView = Backbone.View.extend({
+    var GpsView = Backbone.View.extend({
 
         el: $("#gps-status"),
         template: Mustache.compile($("#status-tmpl").html()),
