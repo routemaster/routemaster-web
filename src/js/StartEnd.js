@@ -13,7 +13,6 @@ $(function() {
             watchPositionId: undefined, // unique id given by watchPosition()
             position: undefined,
             lastError: undefined,
-            map: undefined
         },
 
         initialize: function() {
@@ -24,22 +23,7 @@ $(function() {
 
         startTracking: function() {
             if(this.get("isTracking")) { return; }
-
-            var now = Date.now(),
-                osmUrl = 'http://{s}.tile.openstreeetmap.org/{z}/{x}/{y}.png',
-                osmAttrib = 'Map data © OpenStreetMap contributors';
-
-            var osm = L.TileLayer(osmUrl, {
-                attribution: osmAttrib,
-                maxZoom: 12,
-                minZoom: 8
-            });
-            var map = L.Map('map', {
-                layers: [osm],
-                zoom: 12,
-                center: [51.505, -0.09]
-            });
-
+            var now = Date.now();
             this.set({
                 isTracking: true,
                 startTime: now,
@@ -51,7 +35,6 @@ $(function() {
                     {enableHighAccuracy: true}
                 ),
                 totalDist: 0,
-                map: map
             });
         },
 
@@ -119,10 +102,8 @@ $(function() {
     });
 
     var GpsView = Backbone.View.extend({
-
         el: $("#gps-status"),
         template: Mustache.compile($("#status-tmpl").html()),
-        model: new GpsTracker(),
         events: {
             "click #start-button": "startTracking",
             "click #stop-button": "stopTracking"
@@ -171,8 +152,66 @@ $(function() {
         }
     });
 
+    // This is intended to be a generic view for a leaflet map. This has no
+    // associated model, and data should be supplied to it by an extended view.
+    var MapView = Backbone.View.extend({
+        osmUrl: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        osmAttr: "&copy;" + (new Date()).getFullYear() +
+                 " OpenStreetMap Contributors",
+
+        initialize: function() {
+            this.osm = new L.TileLayer(this.osmUrl, {
+                attribution: this.osmAttrib,
+                maxZoom: 17,
+                minZoom: 8
+            });
+            this.map = new L.Map(this.el, {
+                layers: [this.osm],
+                zoom: 16,
+                center: [51.505, -0.09]
+            });
+        },
+    });
+
+    var GpsMapView = MapView.extend({
+        marker: undefined,
+
+        initialize: function(options) {
+            MapView.prototype.initialize.apply(this, _.toArray(arguments));
+            this.model.on("change:position", _.bind(this.render, this));
+            this.render();
+        },
+
+        render: function() {
+            var position = this.model.get("position");
+            if(position !== undefined) {
+                var leafletPosition = new L.LatLng(
+                    position.coords.latitude, position.coords.longitude
+                );
+                // Render the marker
+                if(this.marker === undefined) {
+                    this.marker = new L.Marker(leafletPosition,
+                                               {clickable: false});
+                    this.marker.addTo(this.map);
+                    // Draw an accuracy circle around the marker
+                    this.circle = new L.Circle(leafletPosition,
+                                               position.coords.accuracy);
+                    this.circle.addTo(this.map);
+                } else {
+                    this.marker.update(leafletPosition);
+                    this.circle.setLatLng(leafletPosition);
+                    this.circle.setRadius(position.coords.accuracy);
+                }
+                this.map.panTo(leafletPosition);
+            }
+        }
+    });
+
     (function() {
         // kick things off
-        var gpsView = new GpsView();
+        // TODO: Use Backbone.Router for this
+        var gpsTracker = new GpsTracker(),
+            gpsView = new GpsView({model: gpsTracker}),
+            mapView = new GpsMapView({el: $("#map"), model: gpsTracker});
     }());
 });
