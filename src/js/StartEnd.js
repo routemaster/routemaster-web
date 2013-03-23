@@ -168,6 +168,8 @@ $(function() {
             this.map = new L.Map(this.el, {
                 layers: [this.osm],
                 zoom: 16,
+                // hide zoom controls on multitouch devices
+                zoomControl: !L.Browser.touch || L.Browser.android23,
                 center: [51.505, -0.09]
             });
         },
