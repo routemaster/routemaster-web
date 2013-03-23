@@ -1,15 +1,18 @@
-/*global window, Backbone, _, $, console*/
+/*global window, Backbone, _, $, console, L, Mustache*/
 $(function() {
     "use strict";
 
     var GpsTracker = Backbone.Model.extend({
         defaults: {
+            posList: [],
+            totalDist: undefined,
+            score: undefined,
             isTracking: false,
             startTime: undefined,
             updatedTime: undefined,
             watchPositionId: undefined, // unique id given by watchPosition()
             position: undefined,
-            lastError: undefined
+            lastError: undefined,
         },
 
         initialize: function() {
@@ -19,8 +22,8 @@ $(function() {
         },
 
         startTracking: function() {
-            var now = Date.now();
             if(this.get("isTracking")) { return; }
+            var now = Date.now();
             this.set({
                 isTracking: true,
                 startTime: now,
@@ -30,7 +33,8 @@ $(function() {
                     _.bind(this.updatePosition, this),
                     _.bind(this.updatePositionError, this),
                     {enableHighAccuracy: true}
-                )
+                ),
+                totalDist: 0,
             });
         },
 
@@ -42,6 +46,8 @@ $(function() {
 
         updatePosition: function(position) {
             // called via navigator.geolocation.watchPosition
+            this.get("posList").push(position);
+            this.updateScore();
             this.set({
                 position: position,
                 updatedTime: Date.now()
@@ -51,14 +57,53 @@ $(function() {
         updatePositionError: function(error) {
             this.set("lastError", error);
             this.stopTracking();
+        },
+
+        // Note that for small distances, pythagorean estimate can suffice
+        // This calculation works on a spherical assumption, see haversine
+        // formula
+        calcDist: function(pos1, pos2) {
+            var lat1 = pos1.coords.latitude,
+                lat2 = pos2.coords.latitude,
+                lon1 = pos1.coords.longitude,
+                lon2 = pos2.coords.longitude,
+
+                R = 6371, // radius of earth in km
+                dLat = (lat2 - lat1).toRad(),
+                dLon = (lon2 - lon1).toRad();
+
+            lat1 = lat1.toRad();
+            lat2 = lat2.toRad();
+
+            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) *
+                    Math.cos(lat2),
+                c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
+                d = R * c;
+            return d;
+        },
+
+        updateScore: function() {
+            var posList = this.get("posList");
+            if(posList.length <= 2) {
+                // Calculation would work fine at length=2 but would be 100
+                // anyway
+                this.set("score", 100);
+                return;
+            }
+            var totalDist = this.get("totalDist") + this.calcDist(
+                    posList[posList.length - 1], posList[posList.length - 2]);
+            this.set("totalDist", totalDist);
+            var straightDist = this.calcDist(posList[0],
+                                             posList[posList.length-1]);
+            this.set("score", 100 * (straightDist / totalDist) *
+                                    (straightDist / totalDist));
         }
-    }),
+    });
 
-        GpsView = Backbone.View.extend({
-
+    var GpsView = Backbone.View.extend({
         el: $("#gps-status"),
-        template: _.template($("#gps-status-tmpl").html()),
-        model: new GpsTracker(),
+        template: Mustache.compile($("#status-tmpl").html()),
         events: {
             "click #start-button": "startTracking",
             "click #stop-button": "stopTracking"
@@ -74,7 +119,8 @@ $(function() {
 
         render: function() {
             var state = _.extend(_.clone(this.model.attributes), {
-                formatTime: _.bind(this.formatTime, this)
+                formattedTime:
+                    this.formatTime(Date.now() - this.model.get("startTime"))
             });
             this.$el.html(this.template(state));
             if(this.model.get("isTracking")) {
@@ -94,8 +140,8 @@ $(function() {
                 sec: f(ms           / 1000 % 60)
             });
         },
-        
-        defaultTimeTemplate: _.template("<%= hrs %>:<%= min %>:<%= sec %>"),
+
+        defaultTimeTemplate: Mustache.compile("{{hrs}}:{{min}}:{{sec}}"),
 
         startTracking: function() {
             this.model.startTracking();
@@ -106,8 +152,66 @@ $(function() {
         }
     });
 
+    // This is intended to be a generic view for a leaflet map. This has no
+    // associated model, and data should be supplied to it by an extended view.
+    var MapView = Backbone.View.extend({
+        osmUrl: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        osmAttr: "&copy;" + (new Date()).getFullYear() +
+                 " OpenStreetMap Contributors",
+
+        initialize: function() {
+            this.osm = new L.TileLayer(this.osmUrl, {
+                attribution: this.osmAttrib,
+                maxZoom: 17,
+                minZoom: 8
+            });
+            this.map = new L.Map(this.el, {
+                layers: [this.osm],
+                zoom: 16,
+                center: [51.505, -0.09]
+            });
+        },
+    });
+
+    var GpsMapView = MapView.extend({
+        marker: undefined,
+
+        initialize: function(options) {
+            MapView.prototype.initialize.apply(this, _.toArray(arguments));
+            this.model.on("change:position", _.bind(this.render, this));
+            this.render();
+        },
+
+        render: function() {
+            var position = this.model.get("position");
+            if(position !== undefined) {
+                var leafletPosition = new L.LatLng(
+                    position.coords.latitude, position.coords.longitude
+                );
+                // Render the marker
+                if(this.marker === undefined) {
+                    this.marker = new L.Marker(leafletPosition,
+                                               {clickable: false});
+                    this.marker.addTo(this.map);
+                    // Draw an accuracy circle around the marker
+                    this.circle = new L.Circle(leafletPosition,
+                                               position.coords.accuracy);
+                    this.circle.addTo(this.map);
+                } else {
+                    this.marker.update(leafletPosition);
+                    this.circle.setLatLng(leafletPosition);
+                    this.circle.setRadius(position.coords.accuracy);
+                }
+                this.map.panTo(leafletPosition);
+            }
+        }
+    });
+
     (function() {
         // kick things off
-        var gpsView = new GpsView();
+        // TODO: Use Backbone.Router for this
+        var gpsTracker = new GpsTracker(),
+            gpsView = new GpsView({model: gpsTracker}),
+            mapView = new GpsMapView({el: $("#map"), model: gpsTracker});
     }());
 });
