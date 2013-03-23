@@ -3,6 +3,8 @@ require([], function() {
     "use strict";
     $(function() {
 
+    L.Icon.Default.imagePath = "img";
+
     var GpsTracker = Backbone.Model.extend({
         defaults: {
             posList: [],
