@@ -1,6 +1,13 @@
 /*global window, Backbone, _, $, console, L, Mustache*/
-require([], function() {
+define(function(require) {
     "use strict";
+
+    var Backbone = require("backbone"),
+        _ = require("underscore"),
+        $ = require("jquery"),
+        Mustache = require("mustache"),
+        L = require("leaflet");
+
     $(function() {
 
     L.Icon.Default.imagePath = "img";
@@ -220,3 +227,5 @@ require([], function() {
             mapView = new GpsMapView({el: $("#map"), model: gpsTracker});
     }());
 });});
+
+require(["debug"], function() {});
