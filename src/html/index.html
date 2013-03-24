@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- Page metadata -->
   <meta charset="utf-8">
-  <title>RouteMaster</title>
   <meta name="viewport" content="width=device-width, initial-scale=1,
                                  maximum-scale=1, user-scalable=no">
   <meta name="HandheldFriendly" content="true">
+  <title>RouteMaster</title>
+  <!-- Import CSS -->
   <link href="css/global.css" rel="stylesheet" type="text/css">
   <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css">
-  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
-  <!--[if lte IE 8]>
-       <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
-        <![endif]-->
-  <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
-  <script type="text/javascript" src="js/zepto.min.js"></script>
-  <script type="text/javascript" src="js/underscore-min.js"></script>
-  <script type="text/javascript" src="js/backbone-min.js"></script>
-  <script type="text/javascript" src="js/mustache.js"></script>
-  <script type="text/javascript" src="js/StartEnd.js"></script>
+  <link type="text/css" rel="stylesheet" href="css/leaflet.css">
+  <!-- Import Javascript -->
+  <script type="text/javascript" src="js/almond.js"></script>
+  <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
   <div id="top">
     <header>
-      <h1 id="logo"><img src="img/routemaster-titlebar.png" width="144" height="28" alt="RouteMaster"></h1>
+      <h1 id="logo">
+        <img src="img/routemaster-titlebar.png" width="144" height="28"
+             alt="RouteMaster">
+      </h1>
     </header>
     <nav>
       <a id="go-track" href=""><i class="icon-dashboard"></i><br>Track</a>
