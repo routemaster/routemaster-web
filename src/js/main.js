@@ -1,4 +1,4 @@
-/*global window, Backbone, _, $, console, L, Mustache*/
+/*global window, console*/
 define(function(require) {
     "use strict";
 
@@ -8,9 +8,7 @@ define(function(require) {
         Mustache = require("mustache"),
         L = require("leaflet");
 
-    $(function() {
-
-    L.Icon.Default.imagePath = "img";
+    L.Icon.Default.imagePath = "img/leaflet";
 
     var GpsTracker = Backbone.Model.extend({
         defaults: {
@@ -219,13 +217,18 @@ define(function(require) {
         }
     });
 
-    (function() {
-        // kick things off
-        // TODO: Use Backbone.Router for this
-        var gpsTracker = new GpsTracker(),
-            gpsView = new GpsView({model: gpsTracker}),
-            mapView = new GpsMapView({el: $("#map"), model: gpsTracker});
-    }());
-});});
+    // kick things off
+    // TODO: Use Backbone.Router for this
+    var gpsTracker = new GpsTracker(),
+        gpsView = new GpsView({model: gpsTracker}),
+        mapView = new GpsMapView({el: $("#map"), model: gpsTracker});
+});
 
-require(["debug"], function() {});
+// A magic little helper module that delays execution of our code until the DOM
+// is ready
+define("documentReady", function(require) {
+    "use strict";
+    require("jquery")(function() { require("main"); });
+});
+
+require(["documentReady"], function() {});

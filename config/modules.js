@@ -14,7 +14,7 @@
 
     modules: [
         {
-            name: "debug"
+            name: "main"
         }
     ],
 
