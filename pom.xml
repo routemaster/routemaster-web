@@ -29,14 +29,12 @@
                 <directory>${basedir}/src</directory>
                 <includes>
                     <include>img/**</include>
-                    <include>js/**</include>
                 </includes>
             </resource>
             <resource>
                 <directory>${basedir}/lib</directory>
                 <includes>
                     <include>css/**</include>
-                    <include>js/**</include>
                 </includes>
             </resource>
             <resource>
@@ -86,7 +84,33 @@
                         <strict>true</strict>
                         <trailing>true</trailing>
                         <browser>true</browser>
+                        <jquery>true</jquery>
+                        <devel>true</devel>
                     </config>
+                </configuration>
+            </plugin>
+
+            <!-- Run the RequireJS optimizer over everything -->
+            <plugin>
+                <groupId>com.github.mcheely</groupId>
+                <artifactId>requirejs-maven-plugin</artifactId>
+                <version>1.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>optimize</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- path to optimizer json config file -->
+                    <configFile>
+                        ${basedir}/config/modules.js
+                    </configFile>
+                    <filterConfig>
+                        true
+                    </filterConfig>
                 </configuration>
             </plugin>
 

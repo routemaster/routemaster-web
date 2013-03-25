@@ -1,8 +1,14 @@
-/*global window, Backbone, _, $, console, L, Mustache*/
-$(function() {
+define("gps", function(require) {
     "use strict";
 
-    var GpsTracker = Backbone.Model.extend({
+    var Backbone = require("backbone"),
+        _ = require("underscore"),
+        $ = require("jquery"),
+        Mustache = require("mustache"),
+        L = require("leaflet"),
+        map = require("map");
+
+    var Tracker = Backbone.Model.extend({
         defaults: {
             posList: [],
             totalDist: undefined,
@@ -101,7 +107,7 @@ $(function() {
         }
     });
 
-    var GpsView = Backbone.View.extend({
+    var HudView = Backbone.View.extend({
         el: $("#gps-status"),
         template: Mustache.compile($("#status-tmpl").html()),
         events: {
@@ -152,34 +158,11 @@ $(function() {
         }
     });
 
-    // This is intended to be a generic view for a leaflet map. This has no
-    // associated model, and data should be supplied to it by an extended view.
-    var MapView = Backbone.View.extend({
-        osmUrl: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        osmAttr: "&copy;" + (new Date()).getFullYear() +
-                 " OpenStreetMap Contributors",
-
-        initialize: function() {
-            this.osm = new L.TileLayer(this.osmUrl, {
-                attribution: this.osmAttrib,
-                maxZoom: 17,
-                minZoom: 8
-            });
-            this.map = new L.Map(this.el, {
-                layers: [this.osm],
-                zoom: 16,
-                // hide zoom controls on multitouch devices
-                zoomControl: !L.Browser.touch || L.Browser.android23,
-                center: [51.505, -0.09]
-            });
-        },
-    });
-
-    var GpsMapView = MapView.extend({
+    var MapView = map.MapView.extend({
         marker: undefined,
 
         initialize: function(options) {
-            MapView.prototype.initialize.apply(this, _.toArray(arguments));
+            map.MapView.prototype.initialize.apply(this, _.toArray(arguments));
             this.model.on("change:position", _.bind(this.render, this));
             this.render();
         },
@@ -194,26 +177,20 @@ $(function() {
                 if(this.marker === undefined) {
                     this.marker = new L.Marker(leafletPosition,
                                                {clickable: false});
-                    this.marker.addTo(this.map);
+                    this.marker.addTo(this.leafletMap);
                     // Draw an accuracy circle around the marker
                     this.circle = new L.Circle(leafletPosition,
                                                position.coords.accuracy);
-                    this.circle.addTo(this.map);
+                    this.circle.addTo(this.leafletMap);
                 } else {
                     this.marker.update(leafletPosition);
                     this.circle.setLatLng(leafletPosition);
                     this.circle.setRadius(position.coords.accuracy);
                 }
-                this.map.panTo(leafletPosition);
+                this.leafletMap.panTo(leafletPosition);
             }
         }
     });
 
-    (function() {
-        // kick things off
-        // TODO: Use Backbone.Router for this
-        var gpsTracker = new GpsTracker(),
-            gpsView = new GpsView({model: gpsTracker}),
-            mapView = new GpsMapView({el: $("#map"), model: gpsTracker});
-    }());
+    return { Tracker: Tracker, HudView: HudView, MapView: MapView };
 });
