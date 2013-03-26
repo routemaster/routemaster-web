@@ -144,6 +144,25 @@
                     </sassOptions>
                 </configuration>
             </plugin>
+
+            <!-- Docco provides pretty documentation from our comments -->
+            <plugin>
+                <groupId>com.atlassian.docco</groupId>
+                <artifactId>atlassian-docco-maven</artifactId>
+                <version>1.0-beta4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>docco</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <skipNoDocco>false</skipNoDocco>
+                    <sourceDirectory>${basedir}/src/js</sourceDirectory>
+                </configuration>
+            </plugin>
             
             <!-- Upon exec, start our JettyServer -->
             <plugin>
@@ -190,6 +209,18 @@
             <layout>default</layout>
             <snapshots>
                 <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+            <id>atlassian-public</id>
+            <url>https://maven.atlassian.com/content/groups/public/</url>
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+                <checksumPolicy>fail</checksumPolicy>
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
