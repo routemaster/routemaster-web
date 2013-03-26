@@ -8,54 +8,16 @@ define(function(require) {
         _ = require("underscore"),
         $ = require("jquery"),
         L = require("leaflet"),
-        gps = require("gps");
+        urlHandler = require("urlHandler");
 
     L.Icon.Default.imagePath = "img/leaflet";
-
-    // We let Backbone.Router figure out what view to display
-    // http://backbonejs.org/#Router
-    var Router = Backbone.Router.extend({
-        routes: {
-            "login": "login",
-            "track": "track",
-            "history": "history",
-            "friends": "friends",
-            "leaderboards": "leaderboards"
-        },
-
-        initialize: function() {
-            this.track();
-        },
-
-        login: function() {
-            console.error("login view is not yet implemented");
-        },
-
-        track: function() {
-            var gpsTracker = new gps.Tracker(),
-                gpsView = new gps.HudView({model: gpsTracker}),
-                mapView = new gps.MapView({el: $("#map"), model: gpsTracker});
-        },
-
-        history: function() {
-            console.error("history view not yet implemented");
-        },
-
-        friends: function() {
-            console.error("friends view not yet implemented");
-        },
-
-        leaderboards: function() {
-            console.error("leaderboards view not yet implemented");
-        }
-    });
 
     // Handling HTML5's pushState would require work on the web server, and it's
     // just not worth it right now. We'll use #fragments instead.
     Backbone.history.start({pushState: false});
 
     // Kick things off
-    new Router();
+    new urlHandler.Router();
 });
 
 // A magic little helper module that delays execution of our code until the DOM
