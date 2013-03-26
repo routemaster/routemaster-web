@@ -118,7 +118,7 @@ define("gps", function(require) {
         initialize: function() {
             this.model.on(
                 "change:isTracking change:lastError change:position",
-                _.bind(this.render, this)
+                this.render, this
             );
             this.render();
         },
