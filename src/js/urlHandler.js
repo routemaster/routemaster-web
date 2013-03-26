@@ -28,14 +28,17 @@ define("urlHandler", function(require) {
         },
 
         initialize: function() {
-            this.on("change:handler", function(model, handler) {
-                // Some pages shouldn't show the nav bar
-                this.set("navBarEnabled", handler !== "login");
-            }, this);
+            this.on("change:handler", this.updateNavBar, this);
+            this.updateNavBar();
+        },
+
+        updateNavBar: function() {
+            // Some pages shouldn't show the nav bar
+            this.set("navBarEnabled", this.get("handler") !== "login");
         }
     });
 
-    // By setting different subviews, this handles the navigation bar, the logo 
+    // By setting different subviews, this handles the navigation bar, the logo
     // bar at the top of the page, and switches us between the login page, the
     // tracking page, etc. It subscribes to changes in the `State` model and
     // updates the display automatically.
@@ -46,14 +49,18 @@ define("urlHandler", function(require) {
             this.model.on("change:handler", function(model, handler) {
                 this[handler]();
             }, this);
-            this.model.on("change:navBarEnabled", function(model, enabled) {
-                // This seems a bit hackish. There might be a better way of
-                // implementing this.
-                $("#top nav").css({"visible": enabled,
-                                   "display": enabled ? "" : "none"});
-            });
+            this.model.on("change:navBarEnabled", this.updateNavBar, this);
             // Load the default page
             this[this.model.get("handler")]();
+            this.updateNavBar();
+        },
+
+        updateNavBar: function() {
+            var enabled = this.model.get("navBarEnabled");
+            // This seems a bit hackish. There might be a better way of
+            // implementing this.
+            $("#top nav").css({"visible": enabled,
+                               "display": enabled ? "" : "none"});
         },
 
         login: function() {
