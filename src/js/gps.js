@@ -1,3 +1,5 @@
+/*! All the low-level geolocation code goes here. */
+/*! Define the `gps` module */
 define("gps", function(require) {
     "use strict";
 
@@ -51,7 +53,7 @@ define("gps", function(require) {
         },
 
         updatePosition: function(position) {
-            // called via navigator.geolocation.watchPosition
+            /*! Called via `navigator.geolocation.watchPosition` */
             this.get("posList").push(position);
             this.updateScore();
             this.set({
@@ -65,9 +67,10 @@ define("gps", function(require) {
             this.stopTracking();
         },
 
-        // Note that for small distances, pythagorean estimate can suffice
-        // This calculation works on a spherical assumption, see haversine
-        // formula
+        /*!
+        Note that for small distances, pythagorean estimate can suffice. This
+        calculation works on a spherical assumption, see haversine formula
+        */
         calcDist: function(pos1, pos2) {
             var lat1 = pos1.coords.latitude,
                 lat2 = pos2.coords.latitude,
@@ -92,8 +95,10 @@ define("gps", function(require) {
         updateScore: function() {
             var posList = this.get("posList");
             if(posList.length <= 2) {
-                // Calculation would work fine at length=2 but would be 100
-                // anyway
+                /*!
+                Calculation would work fine at `length = 2` but would be 100
+                anyway
+                */
                 this.set("score", 100);
                 return;
             }
@@ -130,12 +135,12 @@ define("gps", function(require) {
             });
             this.$el.html(this.template(state));
             if(this.model.get("isTracking")) {
-                // Update the time
+                /*! Update the time */
                 _.delay(_.bind(this.render, this), 1000);
             }
         },
 
-        // Takes a time delta (in milliseconds) and templates it
+        /*! Takes a time delta (in milliseconds) and templates it */
         formatTime: function(ms, template) {
             var f = Math.floor;
             template = template || this.defaultTimeTemplate;
@@ -173,12 +178,12 @@ define("gps", function(require) {
                 var leafletPosition = new L.LatLng(
                     position.coords.latitude, position.coords.longitude
                 );
-                // Render the marker
+                /*! Render the marker */
                 if(this.marker === undefined) {
                     this.marker = new L.Marker(leafletPosition,
                                                {clickable: false});
                     this.marker.addTo(this.leafletMap);
-                    // Draw an accuracy circle around the marker
+                    /*! Draw an accuracy circle around the marker */
                     this.circle = new L.Circle(leafletPosition,
                                                position.coords.accuracy);
                     this.circle.addTo(this.leafletMap);
