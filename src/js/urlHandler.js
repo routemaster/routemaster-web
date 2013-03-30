@@ -43,7 +43,7 @@ define("urlHandler", function(require) {
     // tracking page, etc. It subscribes to changes in the `State` model and
     // updates the display automatically.
     var PageView = Backbone.View.extend({
-        subView: {close: function() {}}, // Just a stub for now
+        subView: {close: function() {}}, // The current frontmost subview
 
         initialize: function() {
             this.model.on("change:handler", function(model, handler) {
@@ -64,6 +64,7 @@ define("urlHandler", function(require) {
         },
 
         login: function() {
+            this.subView.close();
             console.error("login view is not yet implemented");
         },
 
@@ -71,19 +72,24 @@ define("urlHandler", function(require) {
             if(this.model.previous("handler") !== "login") {
                 this.subView.close();
             }
-            var gpsView = new gps.HudView({model: gpsTracker}),
-                mapView = new gps.MapView({el: $("#map"), model: gpsTracker});
+            this.subView = new gps.TrackView({
+                el: $("<div/>").appendTo($("#subview")),
+                model: gpsTracker
+            });
         },
 
         history: function() {
+            this.subView.close();
             console.error("history view not yet implemented");
         },
 
         friends: function() {
+            this.subView.close();
             console.error("friends view not yet implemented");
         },
 
         leaderboards: function() {
+            this.subView.close();
             console.error("leaderboards view not yet implemented");
         }
     });

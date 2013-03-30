@@ -104,11 +104,14 @@ define("gps", function(require) {
                                              posList[posList.length-1]);
             this.set("score", 100 * (straightDist / totalDist) *
                                     (straightDist / totalDist));
+        },
+
+        close: function() {
+            console.error("Tracker.close not yet implemented");
         }
     });
 
     var HudView = Backbone.View.extend({
-        el: $("#gps-status"),
         template: Mustache.compile($("#status-tmpl").html()),
         events: {
             "click #start-button": "startTracking",
@@ -155,13 +158,22 @@ define("gps", function(require) {
 
         stopTracking: function() {
             this.model.stopTracking();
+        },
+
+        close: function() {
+            this.remove();
+            this.unbind();
+            this.model.off(
+                "change:isTracking change:lastError change:position",
+                this.render, this
+            );
         }
     });
 
     var MapView = map.MapView.extend({
         marker: undefined,
 
-        initialize: function(options) {
+        initialize: function() {
             map.MapView.prototype.initialize.apply(this, _.toArray(arguments));
             this.model.on("change:position", this.render, this);
             this.render();
@@ -189,8 +201,40 @@ define("gps", function(require) {
                 }
                 this.leafletMap.panTo(leafletPosition);
             }
+        },
+
+        close: function() {
+            map.MapView.prototype.close.call(this);
+            this.model.off("change:position", this.render, this);
         }
     });
 
-    return { Tracker: Tracker, HudView: HudView, MapView: MapView };
+    // Combine the MapView and HudView into one
+    var TrackView = Backbone.View.extend({
+        initialize: function() {
+            this.map = new MapView({
+                model: this.model,
+                el: $("<div/>").appendTo(this.$el)
+            });
+            this.hud = new HudView({
+                model: this.model,
+                el: $("<div/>").appendTo(this.$el)
+            });
+            this.$el.attr("id", "track");
+        },
+
+        close: function() {
+            this.remove();
+            this.unbind();
+            this.map.close();
+            this.hud.close();
+        }
+    });
+
+    return {
+        Tracker: Tracker,
+        HudView: HudView,
+        MapView: MapView,
+        TrackView: TrackView
+    };
 });

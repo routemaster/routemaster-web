@@ -24,6 +24,12 @@ define("map", function(require) {
                 zoomControl: !L.Browser.touch || L.Browser.android23,
                 center: [51.505, -0.09]
             });
+            this.$el.addClass("map");
+        },
+
+        close: function() {
+            this.remove();
+            this.unbind();
         }
     });
 
