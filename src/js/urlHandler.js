@@ -97,11 +97,11 @@ define("urlHandler", function(require) {
             this.view = new PageView({model: this.model});
             // Autogenerate handler for our simple urls
             _.each(["login", "track", "history", "friends", "leaderboard"],
-                _.bind(function(handler) {
+                function(handler) {
                     this.route(handler, handler, function() {
                         this.model.set("handler", handler);
                     });
-                }, this)
+                }, this
             );
             // Complex parameterized urls could be handled here, if we had any
         }

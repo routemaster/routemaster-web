@@ -163,7 +163,7 @@ define("gps", function(require) {
 
         initialize: function(options) {
             map.MapView.prototype.initialize.apply(this, _.toArray(arguments));
-            this.model.on("change:position", _.bind(this.render, this));
+            this.model.on("change:position", this.render, this);
             this.render();
         },
 
