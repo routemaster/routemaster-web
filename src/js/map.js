@@ -13,7 +13,7 @@ define("map", function(require) {
 
         initialize: function() {
             this.osm = new L.TileLayer(this.osmUrl, {
-                attribution: this.osmAttrib,
+                attribution: this.osmAttr,
                 maxZoom: 17,
                 minZoom: 8
             });

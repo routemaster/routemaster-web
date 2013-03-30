@@ -6,7 +6,10 @@ define("urlHandler", function(require) {
         _ = require("underscore"),
         $ = require("jquery"),
         // navBar = require("navBar"),
-        gps = require("gps");
+        gps = require("gps"),
+        Mustache = require("mustache"),
+        list = require("list"),
+        history = require("history");
 
     // I'm not totally sure where we should put this yet. It needs to be
     // initialized ASAP to give the device time to get a GPS fix.
@@ -80,7 +83,44 @@ define("urlHandler", function(require) {
 
         history: function() {
             this.subView.close();
-            console.error("history view not yet implemented");
+            var fakeRoutes = [
+                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 29),
+                 distance: 296, efficiency: 8.5},
+                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 29),
+                 distance: 203, efficiency: 4.4},
+                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 28),
+                 distance: 298, efficiency: 8.3},
+                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 28),
+                 distance: 203, efficiency: 9.2},
+                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 27),
+                 distance: 296, efficiency: 7.4},
+                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 27),
+                 distance: 203, efficiency: 9.0},
+                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 26),
+                 distance: 296, efficiency: 8.2},
+                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 26),
+                 distance: 203, efficiency: 7.7},
+                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 25),
+                 distance: 296, efficiency: 8.5},
+                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 25),
+                 distance: 203, efficiency: 8.9}
+            ];
+            console.log(history);
+            var collection = new Backbone.Collection([], {
+                model: history.Route
+            });
+            collection.add(fakeRoutes);
+            this.subView = new list.ListView({
+                el: $("<section/>").appendTo($("#subview")),
+                collection: collection,
+                shortTemplate: Mustache.compile(
+                    $("#route-item-short-templ").html()
+                ),
+                expandedTemplate: Mustache.compile(
+                    $("#route-item-expanded-templ").html()
+                )
+            });
+            this.subView.render();
         },
 
         friends: function() {

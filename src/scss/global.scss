@@ -89,16 +89,17 @@ section > img {
 section li {
     padding: 0.2em 0.5em;
 }
-section ul.listing {
+section .listing,
+section .listing {
     text-align: left;
 }
-section ul.listing li {
+section .listing li {
     padding: 0;
 }
-section ul.listing li:nth-child(odd) {
+section .listing li:nth-child(odd) {
     background-color: $graybg;
 }
-section ul.listing li > a {
+section .listing li > a {
     display: block;
     padding: 0.4em 0.5em;
 }
