@@ -83,8 +83,8 @@ define("urlHandler", function(require) {
             console.error("friends view not yet implemented");
         },
 
-        leaderboards: function() {
-            console.error("leaderboards view not yet implemented");
+        leaders: function() {
+            console.error("leaders view not yet implemented");
         }
     });
 
@@ -96,7 +96,7 @@ define("urlHandler", function(require) {
             this.model = new State();
             this.view = new PageView({model: this.model});
             // Autogenerate handler for our simple urls
-            _.each(["login", "track", "history", "friends", "leaderboard"],
+            _.each(["login", "track", "history", "friends", "leaders"],
                 _.bind(function(handler) {
                     this.route(handler, handler, function() {
                         this.model.set("handler", handler);
