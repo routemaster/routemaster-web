@@ -172,19 +172,16 @@ button,
 a.button,
 nav a {
     background: $bluebg;
-    border: 1px solid $blueborder;
     border-radius: 0.4em;
-    color: $whitetext;
+    @include text-inset($whitetext);
     display: block;
-    padding: 0.3em 0.5em;
     text-align: center;
     text-decoration: none;
-    text-shadow: black 0 0 2px;
 }
 nav a {
     background: $darkbg;
-    border-color: black;
-    @include text-inset($whitetext);
+    border: 1px solid black;
+    padding: 0.3em 0.5em;
 }
 nav a.active {
     background-color: $bluebg;
@@ -201,6 +198,13 @@ a.button.active {
     background-color: $greenbg;
     border-color: $greenborder;
     cursor: default;
+}
+button,
+a.button {
+    border: none;
+    width: 100%;
+    font-weight: 600;
+    padding: 0.5em 0.7em;
 }
 
 /* Leaflet Map*/

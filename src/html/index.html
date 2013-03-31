@@ -54,10 +54,12 @@
 <script type="text/template" id="status-tmpl">
   <section>
     <p>
-      <button type="button" id="start-button"
-        {{#tracking}}disabled{{/tracking}}>Start</button>
-      <button type="button" id="stop-button"
-        {{^tracking}}disabled{{/tracking}}>End</button>
+      {{^tracking}}
+      <button type="button" id="start-button">Start Walking</button>
+      {{/tracking}}
+      {{#tracking}}
+      <button type="button" id="stop-button">Stop Walking</button>
+      {{/tracking}}
     </p>
     {{#tracking}}
       <div class="inverted">
