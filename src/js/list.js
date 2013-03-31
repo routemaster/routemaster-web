@@ -7,19 +7,17 @@ define("list", function(require) {
     // Need to pass el, model, shortTemplate, expandedTemplate
     var ListElementView = Backbone.View.extend({
         expanded: false,
+        events: {
+            "click": "toggle"
+        },
 
         initialize: function(options) {
             this.shortTemplate = options.shortTemplate;
             this.expandedTemplate = options.expandedTemplate;
         },
 
-        expand: function() {
-            this.expanded = true;
-            this.render();
-        },
-
-        collapse: function() {
-            this.expanded = false;
+        toggle: function() {
+            this.expanded = !this.expanded;
             this.render();
         },
 

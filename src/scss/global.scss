@@ -95,11 +95,16 @@ section .listing {
 }
 section .listing li {
     padding: 0;
+}
+section .listing li > div:first-child {
     background-image: linear-gradient(to top, darken($graybg, 5%),
                                       lighten($graybg, 5%));
     height: 50px;
     @include text-inset($blacktext);
     border-bottom: 1px solid darken($graybg, 50%);
+}
+section .listing li div {
+    @extend .inverted;
 }
 section .listing li a {
     display: block;
@@ -160,7 +165,7 @@ dt {
     float: left;
     padding: 0 0.5em;
     text-align: right;
-    width: 50%;
+    width: 45%;
 }
 dd {
     font-weight: bold;
