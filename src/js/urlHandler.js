@@ -13,7 +13,7 @@ define("urlHandler", function(require) {
 
     // I'm not totally sure where we should put this yet. It needs to be
     // initialized ASAP to give the device time to get a GPS fix.
-    var gpsTracker = new gps.Tracker();
+    var gpsTracker = new gps.Tracker({watching: true});
 
     // It doesn't make sense to store state information in the router, so we
     // make a model that gets configured by the router and read from by the

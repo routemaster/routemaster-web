@@ -55,11 +55,11 @@
   <section>
     <p>
       <button type="button" id="start-button"
-        {{#isTracking}}disabled{{/isTracking}}>Start</button>
+        {{#tracking}}disabled{{/tracking}}>Start</button>
       <button type="button" id="stop-button"
-        {{^isTracking}}disabled{{/isTracking}}>End</button>
+        {{^tracking}}disabled{{/tracking}}>End</button>
     </p>
-    {{#isTracking}}
+    {{#tracking}}
       <div class="inverted">
         <dl>
           <dt>Time</dt><dd>{{{formattedTime}}}</dd>
@@ -74,10 +74,10 @@
           <p>Waiting for Location</p>
         {{/position}}
       </div>
-    {{/isTracking}}
-    {{^isTracking}}
+    {{/tracking}}
+    {{^tracking}}
       <p>Press "Start" to begin.</p>
-    {{/isTracking}}
+    {{/tracking}}
   </section>
 </script>
 
