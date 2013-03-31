@@ -2,6 +2,7 @@
     baseUrl: "${basedir}/src/js", // module names are relative to baseUrl
     dir: "${basedir}/bin/js", // the output directory
     optimize: "none", // can be "uglify2" or "closure"
+    waitSeconds: 30, // maven is _really_ slow
 
     paths: {
         almond: "${basedir}/lib/js/almond",

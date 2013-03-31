@@ -22,7 +22,7 @@ public class JettyServer extends Server {
 
         resourceHandler.setDirectoriesListed(false);
         resourceHandler.setWelcomeFiles(new String[]{
-            "index.html", "demo.html"
+            "index.html"
         });
 
         // Use the resources packaged into our jarfile

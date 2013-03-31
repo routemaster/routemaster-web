@@ -89,18 +89,27 @@ section > img {
 section li {
     padding: 0.2em 0.5em;
 }
-section ul.listing {
+section .listing,
+section .listing {
     text-align: left;
 }
-section ul.listing li {
+section .listing li {
     padding: 0;
 }
-section ul.listing li:nth-child(odd) {
-    background-color: $graybg;
+section .listing li > div:first-child {
+    background-image: linear-gradient(to top, darken($graybg, 5%),
+                                      lighten($graybg, 5%));
+    height: 50px;
+    @include text-inset($blacktext);
+    border-bottom: 1px solid darken($graybg, 50%);
 }
-section ul.listing li > a {
+section .listing li div {
+    @extend .inverted;
+}
+section .listing li a {
     display: block;
     padding: 0.4em 0.5em;
+    @include text-inset($blacktext);
 }
 form ul {
     display: table;
@@ -156,7 +165,7 @@ dt {
     float: left;
     padding: 0 0.5em;
     text-align: right;
-    width: 50%;
+    width: 45%;
 }
 dd {
     font-weight: bold;
@@ -168,19 +177,16 @@ button,
 a.button,
 nav a {
     background: $bluebg;
-    border: 1px solid $blueborder;
     border-radius: 0.4em;
-    color: $whitetext;
+    @include text-inset($whitetext);
     display: block;
-    padding: 0.3em 0.5em;
     text-align: center;
     text-decoration: none;
-    text-shadow: black 0 0 2px;
 }
 nav a {
     background: $darkbg;
-    border-color: black;
-    @include text-inset($whitetext);
+    border: 1px solid black;
+    padding: 0.3em 0.5em;
 }
 nav a.active {
     background-color: $bluebg;
@@ -198,9 +204,16 @@ a.button.active {
     border-color: $greenborder;
     cursor: default;
 }
+button,
+a.button {
+    border: none;
+    width: 100%;
+    font-weight: 600;
+    padding: 0.5em 0.7em;
+}
 
 /* Leaflet Map*/
-#map {
+#track>.map {
     height: 240px;
     margin: 0.2em 0;
 }

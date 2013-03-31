@@ -2,7 +2,8 @@ define("map", function(require) {
     "use strict";
 
     var Backbone = require("backbone"),
-        L = require("leaflet");
+        L = require("leaflet"),
+        _ = require("underscore");
 
     // This is intended to be a generic view for a leaflet map. This has no
     // associated model, and data should be supplied to it by an extended view.
@@ -13,7 +14,7 @@ define("map", function(require) {
 
         initialize: function() {
             this.osm = new L.TileLayer(this.osmUrl, {
-                attribution: this.osmAttrib,
+                attribution: this.osmAttr,
                 maxZoom: 17,
                 minZoom: 8
             });
@@ -24,6 +25,33 @@ define("map", function(require) {
                 zoomControl: !L.Browser.touch || L.Browser.android23,
                 center: [51.505, -0.09]
             });
+            // hide the "powered by Leaflet" text
+            this.leafletMap.attributionControl.setPrefix(false);
+            // Apply any css we might have for `.map`
+            this.$el.addClass("map");
+
+            // workaround for leaflet bug. We don't use an events hash, as it
+            // might get overridden in extension.
+            var fixMapEvents = {};
+            _.each(
+                ["show", "toggle", "toggleClass", "addClass", "removeClass"],
+                function(e) {
+                    fixMapEvents[e] = _.bind(this.fixMapDisplay, this);
+                }, this
+            );
+            this.delegateEvents(fixMapEvents);
+            this.fixMapDisplay();
+        },
+
+        // Due to a bug in leaflet: http://stackoverflow.com/q/10762984/130598
+        fixMapDisplay: function() {
+            var map = this.leafletMap;
+            L.Util.requestAnimFrame(map.invalidateSize,map,!1,map._container);
+        },
+
+        close: function() {
+            this.remove();
+            this.unbind();
         }
     });
 

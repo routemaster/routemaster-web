@@ -24,17 +24,17 @@
       </h1>
     </header>
     <nav>
-      <a id="go-track" href=""><i class="icon-dashboard"></i><br>Track</a>
-      <a id="go-history" href=""><i class="icon-tasks"></i><br>History</a>
-      <a id="go-friends" href=""><i class="icon-user"></i><br>Friends</a>
-      <a id="go-leaderboards" href=""><i class="icon-bar-chart"></i><br>Leaders</a>
+      <a id="go-track" href="#track">
+        <i class="icon-dashboard"></i><br>Track</a>
+      <a id="go-history" href="#history">
+        <i class="icon-tasks"></i><br>History</a>
+      <a id="go-friends" href="#friends">
+        <i class="icon-user"></i><br>Friends</a>
+      <a id="go-leaders" href="#leaders">
+        <i class="icon-bar-chart"></i><br>Leaders</a>
     </nav>
   </div>
-  <div id="map"></div>
-  <div id="gps-status"></div>
-  <footer>
-    <p>© 2013 RouteMaster</p>
-  </footer>
+  <div id="subview"></div>
 
 <!-- ALL OF THE ...                             -->
 <!--                                            -->
@@ -51,12 +51,14 @@
 <script type="text/template" id="status-tmpl">
   <section>
     <p>
-      <button type="button" id="start-button"
-        {{#isTracking}}disabled{{/isTracking}}>Start</button>
-      <button type="button" id="stop-button"
-        {{^isTracking}}disabled{{/isTracking}}>End</button>
+      {{^tracking}}
+      <button type="button" id="start-button">Start Walking</button>
+      {{/tracking}}
+      {{#tracking}}
+      <button type="button" id="stop-button">Stop Walking</button>
+      {{/tracking}}
     </p>
-    {{#isTracking}}
+    {{#tracking}}
       <div class="inverted">
         <dl>
           <dt>Time</dt><dd>{{{formattedTime}}}</dd>
@@ -71,10 +73,10 @@
           <p>Waiting for Location</p>
         {{/position}}
       </div>
-    {{/isTracking}}
-    {{^isTracking}}
+    {{/tracking}}
+    {{^tracking}}
       <p>Press "Start" to begin.</p>
-    {{/isTracking}}
+    {{/tracking}}
   </section>
 </script>
 
@@ -160,6 +162,25 @@
       <p>Nothing to see here&hellip; move along.</p>
     {{/items}}
   </section>
+</script>
+
+<script type="text/template" id="route-item-short-templ">
+  <div>
+    <a>{{start}} -> {{end}}</a>
+  </div>
+</script>
+
+<script type="text/template" id="route-item-expanded-templ">
+  <div>
+    <dl>
+      <dt>Date</dt>
+      <dd>{{date}}</dd>
+      <dt>Distance</dt>
+      <dd>{{distance}} m</dd>
+      <dt>Efficiency</dt>
+      <dd>{{efficiency}}</dd>
+    </dl>
+  </div>
 </script>
 
 </body>
