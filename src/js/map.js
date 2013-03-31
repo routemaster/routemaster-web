@@ -24,6 +24,9 @@ define("map", function(require) {
                 zoomControl: !L.Browser.touch || L.Browser.android23,
                 center: [51.505, -0.09]
             });
+            // hide the "powered by Leaflet" text
+            this.leafletMap.attributionControl.setPrefix(false);
+            // Apply any css we might have for `.map`
             this.$el.addClass("map");
         },
 
