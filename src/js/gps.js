@@ -13,56 +13,73 @@ define("gps", function(require) {
             posList: [],
             totalDist: undefined,
             score: undefined,
-            isTracking: false,
+            watching: false, // GPS is on
+            tracking: false, // We are actively logging GPS positions
             startTime: undefined,
             updatedTime: undefined,
             watchPositionId: undefined, // unique id given by watchPosition()
             position: undefined,
-            lastError: undefined,
+            lastError: undefined
         },
 
         initialize: function() {
-            if(this.get("isTracking")) {
-                this.startTracking();
+            this.on("change:watching", this.onWatching, this);
+            this.on("change:tracking", this.onTracking, this);
+            this.onWatching();
+            this.onTracking();
+        },
+
+        // Starts watching the GPS position, but doesn't start recording
+        // anything. This gives the GPS time to "warm up" before the user
+        // needs it
+        onWatching: function() {
+            if(this.get("watching")) {
+                this.set("watchPositionId",
+                    navigator.geolocation.watchPosition(
+                        _.bind(this.updatePosition, this),
+                        _.bind(this.updatePositionError, this),
+                        {enableHighAccuracy: true, maximumAge: 0}
+                    )
+                );
+            } else {
+                var watchPositionId = this.get("watchPositionId");
+                if(watchPositionId !== undefined) {
+                    navigator.geolocation.clearWatch(watchPositionId);
+                }
+                this.set({tracking: false, watchPositionId: undefined});
             }
         },
 
-        startTracking: function() {
-            if(this.get("isTracking")) { return; }
-            var now = Date.now();
-            this.set({
-                isTracking: true,
-                startTime: now,
-                updatedTime: now,
-                lastError: undefined,
-                watchPositionId: navigator.geolocation.watchPosition(
-                    _.bind(this.updatePosition, this),
-                    _.bind(this.updatePositionError, this),
-                    {enableHighAccuracy: true}
-                ),
-                totalDist: 0,
-            });
+        // Actively update the posList
+        onTracking: function() {
+            if(this.get("tracking")) {
+                this.set({
+                    startTime: Date.now(),
+                    totalDist: 0,
+                    posList: []
+                });
+            } else {
+                // Nothing
+            }
         },
 
-        stopTracking: function() {
-            if(!this.get("isTracking")) { return; }
-            navigator.geolocation.clearWatch(this.get("watchPosId"));
-            this.set("isTracking", false);
-        },
-
+        // Called via navigator.geolocation.watchPosition
         updatePosition: function(position) {
-            // called via navigator.geolocation.watchPosition
-            this.get("posList").push(position);
-            this.updateScore();
             this.set({
+                // We can't mutate posList. If we did, the `change` event would
+                // never get triggered. Instead, we have to make a new posList.
+                posList: this.get("posList").concat([position]),
                 position: position,
                 updatedTime: Date.now()
             });
+            this.updateScore();
         },
 
         updatePositionError: function(error) {
-            this.set("lastError", error);
-            this.stopTracking();
+            this.set({
+                lastError: error,
+                watching: false
+            });
         },
 
         // Note that for small distances, pythagorean estimate can suffice
@@ -104,11 +121,14 @@ define("gps", function(require) {
                                              posList[posList.length-1]);
             this.set("score", 100 * (straightDist / totalDist) *
                                     (straightDist / totalDist));
+        },
+
+        close: function() {
+            console.error("Tracker.close not yet implemented");
         }
     });
 
     var HudView = Backbone.View.extend({
-        el: $("#gps-status"),
         template: Mustache.compile($("#status-tmpl").html()),
         events: {
             "click #start-button": "startTracking",
@@ -117,8 +137,8 @@ define("gps", function(require) {
 
         initialize: function() {
             this.model.on(
-                "change:isTracking change:lastError change:position",
-                _.bind(this.render, this)
+                "change:tracking change:lastError change:position",
+                this.render, this
             );
             this.render();
         },
@@ -129,7 +149,7 @@ define("gps", function(require) {
                     this.formatTime(Date.now() - this.model.get("startTime"))
             });
             this.$el.html(this.template(state));
-            if(this.model.get("isTracking")) {
+            if(this.model.get("tracking")) {
                 // Update the time
                 _.delay(_.bind(this.render, this), 1000);
             }
@@ -150,20 +170,29 @@ define("gps", function(require) {
         defaultTimeTemplate: Mustache.compile("{{hrs}}:{{min}}:{{sec}}"),
 
         startTracking: function() {
-            this.model.startTracking();
+            this.model.set("tracking", true);
         },
 
         stopTracking: function() {
-            this.model.stopTracking();
+            this.model.set("tracking", false);
+        },
+
+        close: function() {
+            this.remove();
+            this.unbind();
+            this.model.off(
+                "change:tracking change:lastError change:position",
+                this.render, this
+            );
         }
     });
 
     var MapView = map.MapView.extend({
         marker: undefined,
 
-        initialize: function(options) {
+        initialize: function() {
             map.MapView.prototype.initialize.apply(this, _.toArray(arguments));
-            this.model.on("change:position", _.bind(this.render, this));
+            this.model.on("change:position", this.render, this);
             this.render();
         },
 
@@ -189,8 +218,40 @@ define("gps", function(require) {
                 }
                 this.leafletMap.panTo(leafletPosition);
             }
+        },
+
+        close: function() {
+            map.MapView.prototype.close.call(this);
+            this.model.off("change:position", this.render, this);
         }
     });
 
-    return { Tracker: Tracker, HudView: HudView, MapView: MapView };
+    // Combine the MapView and HudView into one
+    var TrackView = Backbone.View.extend({
+        initialize: function() {
+            this.map = new MapView({
+                model: this.model,
+                el: $("<div/>").appendTo(this.$el)
+            });
+            this.hud = new HudView({
+                model: this.model,
+                el: $("<div/>").appendTo(this.$el)
+            });
+            this.$el.attr("id", "track");
+        },
+
+        close: function() {
+            this.remove();
+            this.unbind();
+            this.map.close();
+            this.hud.close();
+        }
+    });
+
+    return {
+        Tracker: Tracker,
+        HudView: HudView,
+        MapView: MapView,
+        TrackView: TrackView
+    };
 });
