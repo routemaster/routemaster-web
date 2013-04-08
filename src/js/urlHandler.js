@@ -10,7 +10,7 @@ define("urlHandler", function(require) {
         Mustache = require("mustache"),
         list = require("list"),
         history = require("history"),
-        login = require("login");
+        login = require("login"),
         friend = require("friend");
 
     // I'm not totally sure where we should put this yet. It needs to be
@@ -71,7 +71,10 @@ define("urlHandler", function(require) {
 
         login: function() {
             this.subView.close();
-            this.subView = new this.login.LoginView({el: this.subview});
+            this.subView = new login.LoginView({
+                el: $("<div/>").appendTo($("#subview")),
+                model: login.model
+            });
         },
 
         track: function() {

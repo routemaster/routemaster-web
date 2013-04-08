@@ -26,7 +26,8 @@ define("login", function(require) {
         onProvider: function() {
             var provider = this.get("provider");
             // restrict inputs to avoid XSS
-            if(!_.contains(this.validProviders, provider)) {
+            if(provider !== undefined &&
+                                   !_.contains(this.validProviders, provider)) {
                 console.error("Invalid login provider");
                 return;
             }
@@ -43,7 +44,7 @@ define("login", function(require) {
 
     var LoginView = Backbone.View.extend({
         model: model,
-        template: Mustache.compile($("#login-tmpl")),
+        template: Mustache.compile($("#login-tmpl").html()),
 
         initialize: function() {
             this.render();
