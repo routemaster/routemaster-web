@@ -5,11 +5,12 @@ define("login", function(require) {
         _ = require("underscore"),
         $ = require("jquery"),
         Mustache = require("mustache"),
-        list = require("list");
+        list = require("list"),
+        google = require("login/google");
 
     // The framework for the login state
     var LoginModel = Backbone.Model.extend({
-        validProviders: ["facebook", "twitter", "openid"],
+        validProviders: ["facebook", "twitter", "openid", "google"],
 
         defaults: {
             provider: undefined,
