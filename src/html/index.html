@@ -15,6 +15,7 @@
   <!-- Import Javascript -->
   <script type="text/javascript" src="js/almond.js"></script>
   <script type="text/javascript" src="js/main.js"></script>
+
 </head>
 <body>
   <div id="top">
@@ -92,6 +93,18 @@
       <li><a id="with-openid" href="#login/openid" class="button">
         Log in with <strong>OpenID</strong>
       </a></li>
+      <li><a id="with-google" href="#login/google" class="button">
+        Log in with <strong>Google</strong>
+      </a></li>
+      <li><button class="button"
+          data-scope="https://www.googleapis.com/auth/plus.login"
+          data-requestvisibleactions="http://schemas.google.com/AddActivity"
+          data-clientId="711623872832.apps.googleusercontent.com"
+          data-callback="onSignInCallback"
+          data-theme="dark"
+          data-cookiepolicy="single_host_origin">
+          Log in with <strong>Google</strong>
+      </button></li>
     </ul>
   </section>
   {{#facebook}}
@@ -150,6 +163,22 @@
       </form>
     </section>
   {{/openid}}
+  {{#google}}
+    <section id="form-google" class="hidden">
+      <form id="login-form">
+          <button class="button"
+            href="#login/google"
+            data-scope="https://www.googleapis.com/auth/plus.login"
+            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+            data-clientId="711623872832.apps.googleusercontent.com"
+            data-callback="onSignInCallback"
+            data-theme="dark"
+            data-cookiepolicy="single_host_origin">
+            Log in with <strong>Google</strong>
+        </button>
+      </form>
+    </section>
+  {{/google}}
   <section>
     <a href="#track">Skip</a>
   </section>
