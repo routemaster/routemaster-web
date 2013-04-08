@@ -11,6 +11,7 @@ define("urlHandler", function(require) {
         list = require("list"),
         history = require("history"),
         login = require("login");
+        friend = require("friend");
 
     // I'm not totally sure where we should put this yet. It needs to be
     // initialized ASAP to give the device time to get a GPS fix.
@@ -125,12 +126,66 @@ define("urlHandler", function(require) {
 
         friends: function() {
             this.subView.close();
-            console.error("friends view not yet implemented");
+            var fakeFriends = [
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+            ];
+            var collection = new Backbone.Collection([], {
+                model: friend.Friend
+            });
+            collection.add(fakeFriends);
+            this.subView = new list.ListView({
+                el: $("<section/>").appendTo($("#subview")),
+                collection: collection,
+                shortTemplate: Mustache.compile(
+                    $("#friend-item-short-templ").html()
+                ),
+                expandedTemplate: Mustache.compile(
+                    $("#friend-item-expanded-templ").html()
+                )
+            });
+            this.subView.render();
         },
 
         leaders: function() {
             this.subView.close();
-            console.error("leaders view not yet implemented");
+            var fakeFriends = [
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+            ];
+            var collection = new Backbone.Collection([], {
+                model: friend.Friend
+            });
+            collection.add(fakeFriends);
+            this.subView = new list.ListView({
+                el: $("<section/>").appendTo($("#subview")),
+                collection: collection,
+                shortTemplate: Mustache.compile(
+                    $("#friend-item-short-templ").html()
+                ),
+                expandedTemplate: Mustache.compile(
+                    $("#friend-item-expanded-templ").html()
+                )
+            });
+            this.subView.render();
         }
     });
 
