@@ -9,7 +9,9 @@ define("urlHandler", function(require) {
         gps = require("gps"),
         Mustache = require("mustache"),
         list = require("list"),
-        history = require("history");
+        history = require("history"),
+        login = require("login"),
+        friend = require("friend");
 
     // I'm not totally sure where we should put this yet. It needs to be
     // initialized ASAP to give the device time to get a GPS fix.
@@ -27,7 +29,8 @@ define("urlHandler", function(require) {
             handler: "login",
             // The nav bar might need to have some state of its own. Maybe this
             // should be its own View and Model in a module.
-            navBarEnabled: true
+            navBarEnabled: true,
+            loginProvider: undefined
         },
 
         initialize: function() {
@@ -67,13 +70,14 @@ define("urlHandler", function(require) {
 
         login: function() {
             this.subView.close();
-            console.error("login view is not yet implemented");
+            this.subView = new login.LoginView({
+                el: $("<div/>").appendTo($("#subview")),
+                model: login.model
+            });
         },
 
         track: function() {
-            if(this.model.previous("handler") !== "login") {
-                this.subView.close();
-            }
+            this.subView.close();
             this.subView = new gps.TrackView({
                 el: $("<div/>").appendTo($("#subview")),
                 model: gpsTracker
@@ -124,12 +128,66 @@ define("urlHandler", function(require) {
 
         friends: function() {
             this.subView.close();
-            console.error("friends view not yet implemented");
+            var fakeFriends = [
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+            ];
+            var collection = new Backbone.Collection([], {
+                model: friend.Friend
+            });
+            collection.add(fakeFriends);
+            this.subView = new list.ListView({
+                el: $("<section/>").appendTo($("#subview")),
+                collection: collection,
+                shortTemplate: Mustache.compile(
+                    $("#friend-item-short-templ").html()
+                ),
+                expandedTemplate: Mustache.compile(
+                    $("#friend-item-expanded-templ").html()
+                )
+            });
+            this.subView.render();
         },
 
         leaders: function() {
             this.subView.close();
-            console.error("leaders view not yet implemented");
+            var fakeFriends = [
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"},
+            ];
+            var collection = new Backbone.Collection([], {
+                model: friend.Friend
+            });
+            collection.add(fakeFriends);
+            this.subView = new list.ListView({
+                el: $("<section/>").appendTo($("#subview")),
+                collection: collection,
+                shortTemplate: Mustache.compile(
+                    $("#friend-item-short-templ").html()
+                ),
+                expandedTemplate: Mustache.compile(
+                    $("#friend-item-expanded-templ").html()
+                )
+            });
+            this.subView.render();
         }
     });
 
@@ -137,18 +195,29 @@ define("urlHandler", function(require) {
     // to load. It intercepts varying URL fragments (eg.
     // `routemaster.com/#track`), and sets the model appropriately.
     var Router = Backbone.Router.extend({
+        // Complex parameterized urls
+        routes: {
+            "login/:provider": "login",
+            "login": "login"
+        },
+
         initialize: function() {
             this.model = new State();
             this.view = new PageView({model: this.model});
             // Autogenerate handler for our simple urls
-            _.each(["login", "track", "history", "friends", "leaders"],
+            _.each(["track", "history", "friends", "leaders"],
                 function(handler) {
                     this.route(handler, handler, function() {
                         this.model.set("handler", handler);
                     });
                 }, this
             );
-            // Complex parameterized urls could be handled here, if we had any
+        },
+
+        // handler functions for complex cases
+        login: function(provider) {
+            login.model.set("provider", provider);
+            this.model.set("handler", "login");
         }
     });
 

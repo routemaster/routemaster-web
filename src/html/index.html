@@ -84,12 +84,15 @@
   <section id="select-provider">
     <h1>Welcome!</h1>
     <ul class="vertical-buttons">
-      <li><a id="with-facebook" href="#facebook" class="button">Log in with
-        <strong>Facebook</strong></a></li>
-      <li><a id="with-twitter" href="#twitter" class="button">Log in with
-        <strong>Twitter</strong></a></li>
-      <li><a id="with-openid" href="#openid" class="button">Log in with
-        <strong>OpenID</strong></a></li>
+      <li><a id="with-facebook" href="#login/facebook" class="button">
+        Log in with <strong>Facebook</strong>
+      </a></li>
+      <li><a id="with-twitter" href="#login/twitter" class="button">
+        Log in with <strong>Twitter</strong>
+      </a></li>
+      <li><a id="with-openid" href="#login/openid" class="button">
+        Log in with <strong>OpenID</strong>
+      </a></li>
     </ul>
   </section>
   {{#facebook}}
@@ -148,6 +151,9 @@
       </form>
     </section>
   {{/openid}}
+  <section>
+    <a href="#track">Skip</a>
+  </section>
 </script>
 
 <script type="text/template" id="list-templ">
@@ -169,7 +175,6 @@
     <a>{{start}} -> {{end}}</a>
   </div>
 </script>
-
 <script type="text/template" id="route-item-expanded-templ">
   <div>
     <dl>
@@ -179,6 +184,19 @@
       <dd>{{distance}} m</dd>
       <dt>Efficiency</dt>
       <dd>{{efficiency}}</dd>
+    </dl>
+  </div>
+</script>
+
+<script type="text/template" id="friend-item-short-templ">
+  <div>
+    <a>{{name}}</a>
+  </div>
+</script>
+<script type="text/template" id="friend-item-expanded-templ">
+  <div>
+    <dl>
+      <p>Nothing here yet.</p>
     </dl>
   </div>
 </script>
