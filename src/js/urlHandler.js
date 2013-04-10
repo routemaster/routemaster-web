@@ -62,8 +62,7 @@ define("urlHandler", function(require) {
             var enabled = this.model.get("navBarEnabled");
             // This seems a bit hackish. There might be a better way of
             // implementing this.
-            $("#top nav").css({"visible": enabled,
-                               "display": enabled ? "" : "none"});
+            $("#top nav").css("display", enabled ? "" : "none");
         },
 
         login: function() {
