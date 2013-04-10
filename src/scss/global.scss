@@ -1,11 +1,11 @@
-/* Global styles file for RouteMaster */
+// Global styles file for RouteMaster
 
 @import "reset";
 @import "fonts";
 @import "colors";
 @import "emboss";
 
-/* Page styles */
+// Base page styles
 html {
     height: 100%;
 }
@@ -18,128 +18,122 @@ body {
     margin-top: 74px;
     text-align: center;
 }
+
+// Logo and navigation
 div#top {
     position: fixed;
     top: 0;
     width: 100%;
     z-index: 9001;
-}
-div#top > header {
-    background-color: $headerbg;
-    @include text-inset($headertext);
-    height: 37px;
-}
-div#top > header h1 {
-    font-size: 1.4em;
-    line-height: 34px;
-}
-div#top > header img {
-    vertical-align: middle;
-}
-div#top > header #menu-button {
-    padding: 0.2em;
-    position: absolute;
-    right: 0.2em;
-    top: 0.2em;
-}
-div#top > nav {
-    border-collapse: collapse;
-    display: table;
-    height: 37px;
-    width: 100%;
-}
-div#top > nav a {
-    border-radius: 0;
-    display: table-cell;
-    font-size: 0.8em;
-    line-height: 1;
-    padding: 0;
-    text-decoration: none;
-    vertical-align: middle;
-    width: 25%;
-}
-footer {
-    border-top: 1px solid $grayborder;
-    font-size: 0.7em;
-    margin: 0.2em 0.5em;
+    // Top-most bar with our logo
+    > header {
+        background-color: $headerbg;
+        @include text-inset($headertext);
+        height: 37px;
+        h1 {
+            font-size: 1.4em;
+            line-height: 34px;
+        }
+        img {
+            vertical-align: middle;
+        }
+    }
+    // Navigation buttons (track, history, friends, leaders)
+    > nav {
+        border-collapse: collapse;
+        display: table;
+        height: 37px;
+        width: 100%;
+        a {
+            @extend %button-like;
+            @extend %button-like.dark;
+            border-radius: 0;
+            border: 1px solid black;
+            display: table-cell;
+            font-size: 0.8em;
+            font-weight: 400;
+            line-height: 1;
+            padding: 0.3em 0.5em;
+            text-decoration: none;
+            vertical-align: middle;
+            width: 25%;
+        }
+    }
 }
 
-/* Section styles */
 section {
     padding: 0.2em 0;
-}
-section.green {
-    background-color: $greenbg;
-}
-section.red {
-    background-color: $redbg;
-}
-section.hidden {
-    display: none;
-}
-section p {
-    padding: 0.2em 0.5em;
-    text-align: left;
-}
-section > img {
-    border: 1px solid $grayborder;
-    border-radius: 0.5em;
-    margin: 0.2em 0;
-}
-section li {
-    padding: 0.2em 0.5em;
-}
-section .listing,
-section .listing {
-    text-align: left;
-}
-section .listing li {
-    padding: 0;
-}
-section .listing li > div:first-child {
-    background-image: linear-gradient(to top, darken($graybg, 5%),
-                                      lighten($graybg, 5%));
-    height: 50px;
-    @include text-inset($blacktext);
-    border-bottom: 1px solid darken($graybg, 50%);
-}
-section .listing li div {
-    @extend .inverted;
-}
-section .listing li a {
-    display: block;
-    padding: 0.4em 0.5em;
-    @include text-inset($blacktext);
-}
-form ul {
-    display: table;
-    width: 100%;
-}
-form li {
-    display: table-row;
-}
-form li:hover {
-    background: $graybg;
-}
-form label,
-form span {
-    display: table-cell;
-    padding: 0.2em 0.5em;
-    vertical-align: middle;
-}
-form label {
-    border-right: 1px solid $grayborder;
-    text-align: right;
-}
-form span {
-    text-align: left;
-}
-.inverted {
-    background-color: $darkbg;
-    @include text-inset($lighttext);
+    p {
+        padding: 0.2em 0.5em;
+        text-align: left;
+    }
+    > img {
+        border: 1px solid $grayborder;
+        border-radius: 0.5em;
+        margin: 0.2em 0;
+    }
+    li {
+        padding: 0.2em 0.5em;
+    }
 }
 
-/* Text styles */
+// list views
+section .listing {
+    text-align: left;
+    li {
+        padding: 0;
+
+        // collapsed view
+        > div:first-child {
+            // we should do something like:
+            // http://stackoverflow.com/a/8049370/130598
+            // so that the .green and .red classes will apply properly
+            background-image: linear-gradient(to top, darken($graybg, 5%),
+                                              lighten($graybg, 5%));
+            border-bottom: 1px solid darken($graybg, 50%);
+            height: 50px;
+            @include text-inset($blacktext);
+
+            a {
+                display: block;
+                padding: 0.4em 0.5em;
+                @include text-inset($blacktext);
+            }
+        }
+
+        // expanded view
+        > div:nth-last-child(-n+1) {
+            @extend .inverted;
+        }
+    }
+}
+
+form {
+    ul {
+        display: table;
+        width: 100%;
+    }
+    li {
+        display: table-row;
+    }
+    li:hover {
+        background: $graybg;
+    }
+    label, span {
+        display: table-cell;
+        padding: 0.2em 0.5em;
+        vertical-align: middle;
+    }
+    label {
+        border-right: 1px solid $grayborder;
+        text-align: right;
+    }
+    span {
+        text-align: left;
+    }
+}
+
+// Text styles
 a {
     color: $linktext;
 }
@@ -173,46 +167,63 @@ dd {
     padding: 0 0.5em;
     text-align: left;
 }
-button,
-a.button,
-nav a {
-    background: $bluebg;
-    border-radius: 0.4em;
+
+// Buttons
+// This code is shared between "real" buttons and the nav bar
+@mixin colored-button($color) {
+    background-color: $color;
+    &:hover, &:active, &.active {
+        background-color: lighten($color, 10%);
+    }
+}
+%button-like {
     @include text-inset($whitetext);
-    display: block;
+    outline: 0; // hide the dotted online on clicked links
     text-align: center;
     text-decoration: none;
+    &:hover, &:active, &.active {
+        cursor: pointer;
+    }
+    &.blue {
+        @include colored-button($bluebg);
+    }
+    &.dark {
+        @include colored-button($darkbg);
+    }
 }
-nav a {
-    background: $darkbg;
-    border: 1px solid black;
-    padding: 0.3em 0.5em;
-}
-nav a.active {
-    background-color: $bluebg;
-}
-button:hover, button:active,
-a.button:hover, a.button:active,
-nav a:hover, nav a:active,
-a.active {
-    background-color: lighten($bluebg, 10%);
-    cursor: pointer;
-}
-button.active,
-a.button.active {
-    background-color: $greenbg;
-    border-color: $greenborder;
-    cursor: default;
-}
-button,
-a.button {
+button, a.button {
+    @extend %button-like;
+    @extend %button-like.blue;
+    border-radius: 0.4em;
+    display: block;
     border: none;
     width: 100%;
     font-weight: 600;
     padding: 0.5em 0.7em;
 }
 
-/* Leaflet Map*/
+// Block modifiers
+.blue {
+    background-color: $bluebg;
+}
+.dark {
+    background-color: $darkbg;
+}
+.green {
+    background-color: $greenbg;
+}
+.red {
+    background-color: $redbg;
+}
+.hidden {
+    display: none;
+}
+.inverted {
+    background-color: $darkbg;
+    @include text-inset($lighttext);
+}
+
+// Leaflet Map
 #track>.map {
     height: 240px;
     margin: 0.2em 0;

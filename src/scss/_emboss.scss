@@ -1,5 +1,5 @@
 @mixin text-inset($base-color) {
-    /* Makes text appear to be engraved into its background */
+    // Makes text appear to be engraved into its background
     color: $base-color;
     @if lightness($base-color) > 30% {
         text-shadow: black 0px -1px;
@@ -8,7 +8,7 @@
     }
 }
 @mixin text-outset($base-color) {
-    /* Makes text appear to be sitting on top of its background */
+    // Makes text appear to be sitting on top of its background
     color: $base-color;
     @if lightness($base-color) > 30% {
         text-shadow: black 0px 1px;
