@@ -53,8 +53,12 @@ define("login", function(require) {
         render: function() {
             var provider = this.model.get("provider");
             this.$el.html(this.template(this.model.attributes));
-        }
+        },
 
+        close: function() {
+            this.remove();
+            this.unbind();
+        }
     });
 
     return {
