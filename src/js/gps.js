@@ -6,7 +6,8 @@ define("gps", function(require) {
         $ = require("jquery"),
         Mustache = require("mustache"),
         L = require("leaflet"),
-        map = require("map");
+        map = require("map"),
+        time = require("time");
 
     var Tracker = Backbone.Model.extend({
         defaults: {
@@ -145,8 +146,8 @@ define("gps", function(require) {
 
         render: function() {
             var state = _.extend(_.clone(this.model.attributes), {
-                formattedTime:
-                    this.formatTime(Date.now() - this.model.get("startTime"))
+                formattedTime: time.relative(this.model.get("startTime"),
+                                             Date.now(), "started")
             });
             this.$el.html(this.template(state));
             if(this.model.get("tracking")) {
@@ -154,21 +155,6 @@ define("gps", function(require) {
                 _.delay(_.bind(this.render, this), 1000);
             }
         },
-
-        // Takes a time delta (in milliseconds) and templates it
-        formatTime: function(ms, template) {
-            var f = Math.floor;
-            template = template || this.defaultTimeTemplate;
-            template = _.isFunction(template) ? template
-                                              : Mustache.compile(template);
-            return template({
-                hrs: f(ms / 60 / 60 / 1000),
-                min: f(ms      / 60 / 1000 % 60),
-                sec: f(ms           / 1000 % 60)
-            });
-        },
-
-        defaultTimeTemplate: Mustache.compile("{{hrs}}:{{min}}:{{sec}}"),
 
         startTracking: function() {
             this.model.set("tracking", true);
