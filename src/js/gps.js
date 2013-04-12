@@ -159,7 +159,8 @@ define("gps", function(require) {
         formatTime: function(ms, template) {
             var f = Math.floor;
             template = template || this.defaultTimeTemplate;
-            template = _.isFunction(template) ? template : _.template(template);
+            template = _.isFunction(template) ? template
+                                              : Mustache.compile(template);
             return template({
                 hrs: f(ms / 60 / 60 / 1000),
                 min: f(ms      / 60 / 1000 % 60),
