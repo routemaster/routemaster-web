@@ -147,7 +147,7 @@ define("gps", function(require) {
         render: function() {
             var state = _.extend(_.clone(this.model.attributes), {
                 formattedTime: time.relative(this.model.get("startTime"),
-                                             Date.now(), "started")
+                                             Date.now())
             });
             this.$el.html(this.template(state));
             if(this.model.get("tracking")) {

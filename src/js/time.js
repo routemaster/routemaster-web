@@ -33,7 +33,7 @@ define("time", function(require) {
 
     // A KISS (Keep It Simple, Stupid!) implementation that generates relative
     // human-readable fuzzy time strings, such as "5 minutes ago".
-    var relative = function(from, to, what) {
+    var relative = function(from, to) {
         // object with information about the time delta
         var delta = getDelta(from, to),
             base;
@@ -51,14 +51,9 @@ define("time", function(require) {
 
         // Generate and return final string
         if(delta.past) {
-            what = what || "happened";
-            return what + " " + base + " ago";
+            return base + " ago";
         } else {
-            if(!what) {
-                return "after " + base;
-            } else {
-                return what + " in " + base;
-            }
+            return "in " + base;
         }
     };
 
