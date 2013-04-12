@@ -134,7 +134,7 @@
                         ${basedir}/bin/css
                     </baseOutputDirectory>
                     <includes>
-                        <include>scss</include>
+                        <include>sass</include>
                     </includes>
                     <sassOptions>
                         <unix_newlines>true</unix_newlines>
