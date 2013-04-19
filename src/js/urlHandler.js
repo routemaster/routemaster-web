@@ -13,6 +13,8 @@ define("urlHandler", function(require) {
         login = require("login"),
         friend = require("friend");
 
+    require("iswipe").start(); // use our iswipe jquery plugin
+
     // I'm not totally sure where we should put this yet. It needs to be
     // initialized ASAP to give the device time to get a GPS fix.
     var gpsTracker = new gps.Tracker({watching: true});
@@ -50,12 +52,18 @@ define("urlHandler", function(require) {
     // updates the display automatically.
     var PageView = Backbone.View.extend({
         subView: {close: function() {}}, // The current frontmost subview
+        elSubView: $("#subview"),
+        elNavBar: $("#top nav"),
 
         initialize: function() {
             this.model.on("change:handler", function(model, handler) {
                 this[handler]();
             }, this);
             this.model.on("change:navBarEnabled", this.updateNavBar, this);
+            // disable dragging on the page
+            $("body").on("dragstart", function(event) {
+                event.preventDefault();
+            });
             // Load the default page
             this[this.model.get("handler")]();
             this.updateNavBar();
@@ -65,13 +73,19 @@ define("urlHandler", function(require) {
             var enabled = this.model.get("navBarEnabled");
             // This seems a bit hackish. There might be a better way of
             // implementing this.
-            $("#top nav").css("display", enabled ? "" : "none");
+            this.elNavBar.css("display", enabled ? "" : "none");
+            $("body")[enabled ? "on" : "off"]("iswipe:start",
+                                              this.swipeHandler);
+        },
+
+        swipeHandler: function() {
+            console.log("got swipe event");
         },
 
         login: function() {
             this.subView.close();
             this.subView = new login.LoginView({
-                el: $("<div/>").appendTo($("#subview")),
+                el: $("<div/>").appendTo(this.elSubView),
                 model: login.model
             });
         },
@@ -79,7 +93,7 @@ define("urlHandler", function(require) {
         track: function() {
             this.subView.close();
             this.subView = new gps.TrackView({
-                el: $("<div/>").appendTo($("#subview")),
+                el: $("<div/>").appendTo(this.elSubView),
                 model: gpsTracker
             });
         },
@@ -114,7 +128,7 @@ define("urlHandler", function(require) {
             });
             collection.add(fakeRoutes);
             this.subView = new list.ListView({
-                el: $("<section/>").appendTo($("#subview")),
+                el: $("<div/>").appendTo(this.elSubView),
                 collection: collection,
                 shortTemplate: Mustache.compile(
                     $("#route-item-short-templ").html()
@@ -146,7 +160,7 @@ define("urlHandler", function(require) {
             });
             collection.add(fakeFriends);
             this.subView = new list.ListView({
-                el: $("<section/>").appendTo($("#subview")),
+                el: $("<div/>").appendTo(this.elSubView),
                 collection: collection,
                 shortTemplate: Mustache.compile(
                     $("#friend-item-short-templ").html()
@@ -178,7 +192,7 @@ define("urlHandler", function(require) {
             });
             collection.add(fakeFriends);
             this.subView = new list.ListView({
-                el: $("<section/>").appendTo($("#subview")),
+                el: $("<div/>").appendTo(this.elSubView),
                 collection: collection,
                 shortTemplate: Mustache.compile(
                     $("#friend-item-short-templ").html()
