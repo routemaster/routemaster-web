@@ -18,6 +18,14 @@ body
     margin-top: 74px
     text-align: center
 
+*
+    -webkit-touch-callout: none
+    -webkit-user-select: none
+    -khtml-user-select: none
+    -moz-user-select: none
+    -ms-user-select: none
+    user-select: none
+
 // Logo and navigation
 div#top
     position: fixed
@@ -56,18 +64,15 @@ div#top
 
 section
     padding: 0.2em 0
-    p
-        padding: 0.2em 0.5em
-        text-align: left
-    > img
-        border: 1px solid $grayborder
-        border-radius: 0.5em
-        margin: 0.2em 0
-    li
-        padding: 0.2em 0.5em
+
+p
+    padding: 0.2em 0.5em
+    text-align: left
+li
+    padding: 0.2em 0.5em
 
 // list views
-section .listing
+.listing
     text-align: left
     li
         padding: 0
