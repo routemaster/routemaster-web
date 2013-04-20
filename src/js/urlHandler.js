@@ -74,12 +74,26 @@ define("urlHandler", function(require) {
             // This seems a bit hackish. There might be a better way of
             // implementing this.
             this.elNavBar.css("display", enabled ? "" : "none");
-            $("body")[enabled ? "on" : "off"]("iswipe:start",
-                                              this.swipeHandler);
+            var ev = _.bind($(document)[enabled ? "on" : "off"], $(document));
+            var swipeHandler = _.bind(this.swipeHandler, this);
+            ev("iswipe:start", swipeHandler);
+            ev("iswipe:end", swipeHandler);
+            ev("iswipe:move", swipeHandler);
         },
 
-        swipeHandler: function() {
-            console.log("got swipe event");
+        swipeHandler: function(event) {
+            if(event.data.axis === "vertical") { return; }
+            if(_.contains(["iswipe:start", "iswipe:move"], event.type)) {
+                // we use a 0 ms animation, so that zepto handles browser
+                // prefixing issues for us
+                $(this.elSubView.children()[0]).animate({
+                    translateX: event.data.swipeX + "px"
+                }, 0);
+            } else {
+                $(this.elSubView.children()[0]).animate(
+                    {translateX: "0px"}, 150, "ease-out"
+                );
+            }
         },
 
         login: function() {
