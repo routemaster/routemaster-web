@@ -10,6 +10,7 @@
         underscore: "${basedir}/lib/js/underscore",
         jquery: "${basedir}/lib/js/zepto", // called jquery for compatibility
         mustache: "${basedir}/lib/js/mustache",
+        plusone: "${basedir}/lib/js/plusone",
         leaflet: "${basedir}/lib/js/leaflet"
     },
 
@@ -32,6 +33,10 @@
         },
         leaflet: {
             exports: "L"
+        },
+        plusone: {
+            exports: "gapi",
+            deps: ["jquery"]
         }
     }
 }
