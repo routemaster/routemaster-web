@@ -9,13 +9,13 @@ define("history", function(require) {
 
     var Route = Backbone.Model.extend({
         defaults: {
-            start: undefined,
-            end: undefined,
+            startName: undefined,
+            endName: undefined,
             date: undefined,
             distance: undefined,
-            efficiency: undefined,
-            username: undefined
-        }
+            efficiency: undefined
+        },
+        url: '/route/'
     });
 
     return { Route: Route };
