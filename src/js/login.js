@@ -10,7 +10,7 @@ define("login", function(require) {
 
     // The framework for the login state
     var LoginModel = Backbone.Model.extend({
-        validProviders: ["facebook", "twitter", "openid","google"],
+        validProviders: ["facebook", "twitter", "openid", "google"],
 
         defaults: {
             provider: undefined,
