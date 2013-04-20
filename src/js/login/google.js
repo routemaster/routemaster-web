@@ -1,4 +1,8 @@
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 52029e009c83d30149b77ea40accf77b094c97b5
 /*
  *
  * Copyright 2013 Google Inc.
@@ -18,6 +22,7 @@
 
 
 
+<<<<<<< HEAD
 define("login/google", function(require) {
     "use strict";
     
@@ -132,3 +137,6 @@ define("login/google", function(require) {
         profile: profile
     };
 });
+=======
+
+>>>>>>> 52029e009c83d30149b77ea40accf77b094c97b5
