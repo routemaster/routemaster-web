@@ -43,6 +43,11 @@ define("list", function(require) {
             this.shortTemplate = options.shortTemplate;
             this.expandedTemplate = options.expandedTemplate;
             this.$ol = $('<ol/>').addClass("listing");
+        },
+
+        render: function() {
+            // Create subviews for the objects in the collection
+            this.subViews = [];
             this.collection.each(function(model) {
                 var $li = $('<li/>');
                 this.$ol.append($li);
@@ -53,16 +58,7 @@ define("list", function(require) {
                     expandedTemplate: this.expandedTemplate
                 }));
             }, this);
-            // Watch the collection for changes
-            //this.collection.on("add", function(item) {
-            //    // New item!!!
-            //}, this);
-            //this.collection.on("remove", function(item) {
-            //    // Removed item!!!
-            //}, this);
-        },
-
-        render: function() {
+            // Render them
             _.each(this.subViews, function(subView) {
                 subView.render();
             });
