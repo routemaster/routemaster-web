@@ -86,11 +86,11 @@ define("urlHandler", function(require) {
 
         history: function() {
             this.subView.close();
-            var routes = new Backbone.Collection([], {
+            var Routes = Backbone.Collection.extend({
                 model: history.Route,
-                url: '/user/1/recent/'
+                url: "/user/1/recent/"
             });
-            routes.fetch();
+            var routes = new Routes();
             this.subView = new list.ListView({
                 el: $("<section/>").appendTo($("#subview")),
                 collection: routes,
@@ -101,7 +101,14 @@ define("urlHandler", function(require) {
                     $("#route-item-expanded-templ").html()
                 )
             });
-            this.subView.render();
+            routes.fetch({
+                success: _.bind(function(collection, response, options) {
+                    this.subView.render();
+                }, this),
+                error: function() {
+                    console.log(arguments);
+                }
+            });
         },
 
         friends: function() {
