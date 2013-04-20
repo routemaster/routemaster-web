@@ -94,16 +94,8 @@
       <li><a id="with-openid" href="#login/openid" class="button">
         Log in with <strong>OpenID</strong>
       </a></li>
-      <li>
-        <button class="button"
-            data-scope="https://www.googleapis.com/auth/plus.login"
-            data-requestvisibleactions="http://schemas.google.com/AddActivity"
-            data-clientId="711623872832.apps.googleusercontent.com"
-            data-callback="onSignInCallback"
-            data-theme="dark"
-            data-cookiepolicy="single_host_origin">
-            Log in with <strong>Google</strong>
-        </button>
+      <li><a id="with-openid" href="#login/google" class="button">
+        Log in with <strong>Google</strong>
       </a></li>
     </ul>
   </section>
@@ -166,16 +158,16 @@
   {{#google}}
     <section id="form-google" class="hidden">
       <form id="login-form">
-        <ul>
-          <li>
-            <label for="login-id">Identifier</label>
-            <span><input id="login-id" type="text"></span>
-          </li>
-          <li>
-            <label>&nbsp;</label>
-            <span><button id="login-submit" type="submit">Log in</button></span>
-          </li>
-        </ul>
+          <button class="button"
+            href="#login/google"
+            data-scope="https://www.googleapis.com/auth/plus.login"
+            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+            data-clientId="711623872832.apps.googleusercontent.com"
+            data-callback="onSignInCallback"
+            data-theme="dark"
+            data-cookiepolicy="single_host_origin">
+            Log in with <strong>Google</strong>
+        </button>
       </form>
     <div id="authOps" style="display:none">
         <meta http-equiv="Refresh" content="5; url="http://localhost:8080/index.html">
