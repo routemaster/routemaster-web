@@ -28,6 +28,7 @@ define("iswipe", function(require) {
             prevState = _.clone(state);
 
         // ignore certain inputs completely
+        if(event === ignoreEvent) return; // see: disableOnElement
         if(state.down && device !== state.device) return; // secondary inputs
         if(!_.contains(config.devices, device)) return;   // unwanted devices
 
@@ -60,6 +61,7 @@ define("iswipe", function(require) {
         _.extend(state, {
             down: down,
             device: device,
+            startEl: down && toggled ? event.target : prevState.startEl,
             startX: down && toggled ? x : prevState.startX,
             startY: down && toggled ? y : prevState.startY,
             x: x,
@@ -68,19 +70,17 @@ define("iswipe", function(require) {
         state.axis = getAxis(state);
         state.direction = getDirection(state);
 
-        var returnValue = triggerEvents(event, state, prevState);
+        triggerEvents(event, state, prevState);
 
         // clean up state after `up`
         if(!down) {
-            _.each("device startX startY x y axis direction".split(" "),
+            _.each("device startEl startX startY x y axis direction".split(" "),
                 function(el){
                     state[el] = undefined;
                 }
             );
             state.triggered = false;
         }
-
-        return returnValue;
     };
 
     // Return what axis (`"horizontal"` or `"vertical"`) the swipe is on, using
@@ -133,27 +133,65 @@ define("iswipe", function(require) {
             state.triggered = true;
         } else if(!state.down && prevState.down) {
             eventType = "end";
-            // prevent click events from firing
-            baseEvent.stopPropagation();
-            baseEvent.stopImmediatePropagation();
-            baseEvent.preventDefault();
-            returnValue = false;
         } else if(!state.down) {
-            return returnValue; // not really a swipe
+            return; // not really a swipe
         } else if(state.x !== prevState.x || state.y !== prevState.y) {
             eventType = "move";
         } else {
-            return returnValue; // we didn't actually move, don't waste time
+            return; // we didn't actually move, don't waste time
         }
 
         // create an event
         $(baseEvent.target).trigger("iswipe:" + eventType,
                                     $.Event(_.extend(_.clone(state), {
             bubbles: true,
+            disableClick: function() { disableClick(baseEvent); },
             swipeX: state.x - state.startX,
             swipeY: state.y - state.startY
         })));
-        return returnValue;
+    };
+
+    var stopPropogation = function(event) {
+        event.stopPropagation();
+    };
+
+    // Disable swiping if it happens over a specific element (like an
+    // interactive map)
+    var ignoreEvent, // the specific event to ignore
+        disableOnElementCallback = function(event) { ignoreEvent = event; };
+    var disableOnElement = function(el) {
+        $(el).on(_.keys(handlerMap).join(" "), disableOnElementCallback);
+    };
+    var enableOnElement = function(el) {
+        $(el).off(_.keys(handlerMap).join(" "), disableOnElementCallback);
+    };
+
+    // Disables the next click event from being fired. This is useful to call on
+    // "iswipe:end" if you want to ensure a click doesn't fire.
+    var disableClick = function(event) {
+        // The click only fires if up and down happened on the same element
+        if(event.target !== state.startEl) { return; }
+        // Intercept the next "click" event, and kill it ASAP.
+        // A bit of a hack, but I couldn't find a better way of handling it.
+        var intercepted = false;
+        var callback = function(ev) {
+            if(ev !== undefined) {
+                ev.preventDefault();
+                ev.stopPropagation();
+            }
+            if(!intercepted) {
+                document.removeEventListener("click", callback, true);
+                intercepted = true;
+            }
+        };
+        // The `true` makes the event handler get called on the capture phase
+        // (which occurs before the bubbling phase), allowing us to catch and
+        // disable the event before anyone else gets the chance.
+        // See: <http://w3.org/TR/DOM-Level-3-Events/#event-flow>
+        document.addEventListener("click", callback, true);
+        // If the "click" didn't fire after a certain time period, we messed up,
+        // and we should remove it anyways before we get into more trouble.
+        _.delay(callback, 200);
     };
 
     // Define jQuery handlers for each type of event
@@ -177,17 +215,19 @@ define("iswipe", function(require) {
     // Enable mouse and touch event listening. Call me first if you want things
     // to work!
     var start = function() {
-        var $document = $(document),
-            on = $document.on;
-        _.each(_.pairs(handlerMap),
-               _.bind(Function.prototype.apply, on, $document));
+        $(document).on(handlerMap);
     };
 
     // Disable mouse and touch event listening.
     var stop = function() {
-        _.each(_.pairs(handlerMap), _.bind($(document).off.apply,
-                                           $(document).off, this));
+        $(document).off(handlerMap);
     };
 
-    return { start: start, stop: stop };
+    return {
+        start: start,
+        stop: stop,
+        disableClick: disableClick,
+        disableOnElement: disableOnElement,
+        enableOnElement: enableOnElement
+    };
 });

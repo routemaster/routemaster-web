@@ -66,6 +66,7 @@ define("urlHandler", function(require) {
             });
             // Load the default page
             this[this.model.get("handler")]();
+            this.swipeHandlerBound = _.bind(this.swipeHandler, this);
             this.updateNavBar();
         },
 
@@ -75,14 +76,13 @@ define("urlHandler", function(require) {
             // implementing this.
             this.elNavBar.css("display", enabled ? "" : "none");
             var ev = _.bind($(document)[enabled ? "on" : "off"], $(document));
-            var swipeHandler = _.bind(this.swipeHandler, this);
-            ev("iswipe:start", swipeHandler);
-            ev("iswipe:end", swipeHandler);
-            ev("iswipe:move", swipeHandler);
+            ev("iswipe:start", this.swipeHandlerBound);
+            ev("iswipe:end", this.swipeHandlerBound);
+            ev("iswipe:move", this.swipeHandlerBound);
         },
 
         swipeHandler: function(event) {
-            if(event.data.axis === "vertical") { return; }
+            if(event.data.axis !== "horizontal") { return; }
             if(_.contains(["iswipe:start", "iswipe:move"], event.type)) {
                 // we use a 0 ms animation, so that zepto handles browser
                 // prefixing issues for us
@@ -90,6 +90,7 @@ define("urlHandler", function(require) {
                     translateX: event.data.swipeX + "px"
                 }, 0);
             } else {
+                event.data.disableClick();
                 $(this.elSubView.children()[0]).animate(
                     {translateX: "0px"}, 150, "ease-out"
                 );
@@ -136,7 +137,6 @@ define("urlHandler", function(require) {
                 {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 25),
                  distance: 203, efficiency: 8.9}
             ];
-            console.log(history);
             var collection = new Backbone.Collection([], {
                 model: history.Route
             });
