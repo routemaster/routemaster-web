@@ -99,7 +99,8 @@ define("urlHandler", function(require) {
                 ),
                 expandedTemplate: Mustache.compile(
                     $("#route-item-expanded-templ").html()
-                )
+                ),
+                itemView: history.RouteItemView
             });
             routes.fetch({
                 success: _.bind(function(collection, response, options) {
