@@ -40,7 +40,8 @@ define("history", function(require) {
 
     var RouteItemView = list.ListElementView.extend({
         initialize: function() {
-            list.ListElementView.prototype.initialize.apply(this, _.toArray(arguments));
+            list.ListElementView.prototype.initialize.apply(
+                this, _.toArray(arguments));
             this.map = new map.MapView({
                 el: $("<div/>").appendTo(this.$el)
             });
