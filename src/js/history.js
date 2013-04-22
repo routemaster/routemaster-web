@@ -27,14 +27,7 @@ define("history", function(require) {
                 url: "/route/" + this.id + "/waypoints/"
             });
             this.waypoints = new Waypoints();
-            this.waypoints.fetch({
-                success: _.bind(function(collection, response, options) {
-                    this.drawPath();
-                }, this),
-                error: function() {
-                    console.log(arguments);
-                }
-            });
+            this.waypoints.fetch();
         }
     });
 
@@ -43,19 +36,29 @@ define("history", function(require) {
             list.ListElementView.prototype.initialize.apply(
                 this, _.toArray(arguments));
             this.map = new map.MapView({
-                el: $("<div/>").appendTo(this.$el)
+                el: $("<div/>")
             });
         },
 
-        render: function() {
+        drawPath: function() {
             // Add path to the leaflet map
             var points = [];
-            _.each(this.model.waypoints, function(waypoint) {
-                points.push([waypoint.latitude, waypoint.longitude]);
+            _.each(this.model.waypoints.models, function(waypoint) {
+                var w = waypoint.attributes;
+                points.push([w.latitude, w.longitude]);
             });
             var polyline = L.polyline(points).addTo(this.map.leafletMap);
             // Zoom the map to the area containing the path
             this.map.leafletMap.fitBounds(polyline.getBounds());
+        },
+
+        render: function() {
+            this.$el.html(this.shortTemplate(this.model.attributes));
+            if(this.expanded) {
+                this.$el.append(this.expandedTemplate(this.model.attributes));
+                this.$el.append(this.map.el);
+                this.drawPath();
+            }
         }
     });
 
