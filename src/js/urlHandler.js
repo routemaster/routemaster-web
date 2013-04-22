@@ -114,26 +114,14 @@ define("urlHandler", function(require) {
 
         friends: function() {
             this.subView.close();
-            var fakeFriends = [
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-            ];
-            var collection = new Backbone.Collection([], {
-                model: friend.Friend
+            var Friends = new Backbone.Collection.extend({
+                model: friend.Friend,
+                url: "/user/1/friends/"
             });
-            collection.add(fakeFriends);
+            var userfriends = new Friends();
             this.subView = new list.ListView({
                 el: $("<section/>").appendTo($("#subview")),
-                collection: collection,
+                collection: userfriends,
                 shortTemplate: Mustache.compile(
                     $("#friend-item-short-templ").html()
                 ),
@@ -141,7 +129,14 @@ define("urlHandler", function(require) {
                     $("#friend-item-expanded-templ").html()
                 )
             });
-            this.subView.render();
+            userfriends.fetch({
+                success: _.bind(function(collection, response, options) {
+                    this.subView.render();
+                }, this),
+                error: function() {
+                    console.log(arguments);
+                }
+            });
         },
 
         leaders: function() {
