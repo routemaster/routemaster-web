@@ -93,7 +93,7 @@ define("gps", function(require) {
                 // We can't mutate waypoints. If we did, the `change` event
                 // would never get triggered. Instead, we have to make a new
                 // waypoints.
-                waypoints: this.get("waypoints").concat([position]),
+                waypoints: this.get("waypoints").concat([position.coords]),
                 position: position,
                 updatedTime: Date.now()
             });
