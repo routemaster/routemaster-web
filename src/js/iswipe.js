@@ -9,8 +9,8 @@ define("iswipe", function(require) {
 
     var config = {
         // minimum number of pixels moved to count as a swipe
-        horizonalTriggerDelta: 50,
-        verticalTriggerDelta: 30,
+        horizonalTriggerDelta: 30,
+        verticalTriggerDelta: 10,
         devices: ["mouse", "touch"]
     };
 
