@@ -35,9 +35,6 @@ define("history", function(require) {
         initialize: function() {
             list.ListElementView.prototype.initialize.apply(
                 this, _.toArray(arguments));
-            this.map = new map.MapView({
-                el: $("<div/>")
-            });
         },
 
         drawPath: function() {
@@ -47,17 +44,33 @@ define("history", function(require) {
                 var w = waypoint.attributes;
                 points.push([w.latitude, w.longitude]);
             });
-            var polyline = L.polyline(points).addTo(this.map.leafletMap);
+            this.polyline = L.polyline(points).addTo(this.map.leafletMap);
+        },
+
+        zoomPath: function() {
             // Zoom the map to the area containing the path
-            this.map.leafletMap.fitBounds(polyline.getBounds());
+            this.map.leafletMap.fitBounds(this.polyline.getBounds());
         },
 
         render: function() {
             this.$el.html(this.shortTemplate(this.model.attributes));
             if(this.expanded) {
-                this.$el.append(this.expandedTemplate(this.model.attributes));
-                this.$el.append(this.map.el);
-                this.drawPath();
+                if(this.map === undefined) {
+                    this.map = new map.MapView({
+                        el: $("<div/>"),
+                        isStatic: true
+                    });
+                    this.drawPath();
+                }
+                var expandedElement =
+                    $(this.expandedTemplate(this.model.attributes));
+                this.$el.append(expandedElement);
+                expandedElement.append(this.map.$el);
+                // zooming must happen after map is drawn (so that leaflet can
+                // figure out the size of the map it's working with)
+                _.defer(_.bind(this.zoomPath, this));
+            } else {
+                this.map = undefined;
             }
         }
     });
