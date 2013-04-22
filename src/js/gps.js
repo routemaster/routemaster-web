@@ -13,6 +13,7 @@ define("gps", function(require) {
         defaults: {
             posList: [],
             totalDist: undefined,
+            posListLengthOnLastUpdate: 1,
             score: undefined,
             watching: false, // GPS is on
             tracking: false, // We are actively logging GPS positions
@@ -91,37 +92,39 @@ define("gps", function(require) {
                 lat2 = pos2.coords.latitude,
                 lon1 = pos1.coords.longitude,
                 lon2 = pos2.coords.longitude,
-
                 R = 6371, // radius of earth in km
-                dLat = (lat2 - lat1).toRad(),
-                dLon = (lon2 - lon1).toRad();
-
-            lat1 = lat1.toRad();
-            lat2 = lat2.toRad();
+                dLat = (lat2 - lat1) * Math.PI / 180,
+                dLon = (lon2 - lon1) * Math.PI / 180,
+                lat1Deg = lat1 * Math.PI / 180,
+                lat2Deg = lat2 * Math.PI / 180;
 
             var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) *
-                    Math.cos(lat2),
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2) *
+                    Math.cos(lat1Deg) * Math.cos(lat2Deg),
                 c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
                 d = R * c;
-            return d;
+            return d * 1000; // Distance in meters
         },
 
         updateScore: function() {
-            var posList = this.get("posList");
+            var posList = this.get("posList"),
+                newPosStart = this.get("posListLengthOnLastUpdate");
             if(posList.length <= 2) {
                 // Calculation would work fine at length=2 but would be 100
                 // anyway
                 this.set("score", 100);
                 return;
             }
-            var totalDist = this.get("totalDist") + this.calcDist(
-                    posList[posList.length - 1], posList[posList.length - 2]);
+            var totalDist = this.get("totalDist");
+            for(var i = newPosStart; i < posList.length; i++) {
+                totalDist += this.calcDist(posList[i - 1], posList[i]);
+            }
+            this.set("posListLengthOnLastUpdate", posList.length);
             this.set("totalDist", totalDist);
             var straightDist = this.calcDist(posList[0],
                                              posList[posList.length-1]);
-            this.set("score", 100 * (straightDist / totalDist) *
-                                    (straightDist / totalDist));
+            this.set("score", Math.ceil(100 * Math.pow(straightDist, 2) /
+                                        Math.pow(totalDist, 2)));
         },
 
         close: function() {
