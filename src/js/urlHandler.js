@@ -81,18 +81,51 @@ define("urlHandler", function(require) {
             ev("iswipe:move", this.swipeHandlerBound);
         },
 
+        // Makes the given subview element the correct size such that our page
+        // height is exactly 100%. This disables vertical scrolling and ensures
+        // that elements we're flipping between have the same height. (all
+        // without using `overflow: auto`)
+        //
+        // We can't use `overflow:auto` because not all browsers support it yet.
+        // (I'm looking at you, Android 2.x)
+        collapseSubView: function(view) {
+            view = view || this.elSubView;
+            // we use a 0 ms animation, so that zepto handles browser
+            // prefixing issues for us
+            $(view.children()[0]).animate({
+                translateY: -view.scrollTop() + "px"
+            }, 0);
+            view.addClass("frozen");
+            view.css("height", $(window).height() - $("#top").height());
+        },
+
+        // Un-does the modifications made by `collapseSubView`.
+        expandSubView: function(view) {
+            view = view || this.elSubView;
+            $(view.children()[0]).animate({
+                translateY: "0px"
+            }, 0);
+            view.removeClass("frozen");
+            view.css("height", "");
+        },
+
         swipeHandler: function(event) {
             if(event.data.axis !== "horizontal") { return; }
             if(_.contains(["iswipe:start", "iswipe:move"], event.type)) {
                 // we use a 0 ms animation, so that zepto handles browser
                 // prefixing issues for us
+                this.collapseSubView();
                 $(this.elSubView.children()[0]).animate({
-                    translateX: event.data.swipeX + "px"
+                    translateX: event.data.swipeX + "px",
+                    // the y transformation has to be re-done because we're
+                    // overwriting the whole css `"transform"` property here
+                    translateY: -this.elSubView.scrollTop() + "px"
                 }, 0);
             } else {
                 event.data.disableClick();
                 $(this.elSubView.children()[0]).animate(
-                    {translateX: "0px"}, 150, "ease-out"
+                    {translateX: "0px"}, 150, "ease-out",
+                    _.bind(this.expandSubView, this)
                 );
             }
         },
