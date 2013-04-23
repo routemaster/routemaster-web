@@ -89,6 +89,9 @@ define("gps", function(require) {
 
         // Called via navigator.geolocation.watchPosition
         updatePosition: function(position) {
+            // It looks like firefox pools the position object between updates
+            // so the position never actually *changes*,
+            position = _.clone(position);
             this.set({
                 // We can't mutate waypoints. If we did, the `change` event
                 // would never get triggered. Instead, we have to make a new
@@ -224,10 +227,20 @@ define("gps", function(require) {
                     this.circle = new L.Circle(leafletPosition,
                                                position.coords.accuracy);
                     this.circle.addTo(this.leafletMap);
+                    // Draw a line showing our progress
+                    this.line = new L.Polyline([], {clickable: false});
+                    this.line.addTo(this.leafletMap);
                 } else {
-                    this.marker.update(leafletPosition);
+                    this.marker.setLatLng(leafletPosition);
                     this.circle.setLatLng(leafletPosition);
                     this.circle.setRadius(position.coords.accuracy);
+                    this.line.setLatLngs(_.map(
+                        this.model.get("waypoints"),
+                        function(coords) {
+                            return new L.LatLng(coords.latitude,
+                                                coords.longitude);
+                        }
+                    ));
                 }
                 this.leafletMap.panTo(leafletPosition);
             }
