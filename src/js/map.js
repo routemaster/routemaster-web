@@ -60,8 +60,7 @@ define("map", function(require) {
 
         // Due to a bug in leaflet: http://stackoverflow.com/q/10762984/130598
         fixMapDisplay: function() {
-            var map = this.leafletMap;
-            L.Util.requestAnimFrame(map.invalidateSize,map,!1,map._container);
+            this.leafletMap.invalidateSize(false);
         },
 
         close: function() {
