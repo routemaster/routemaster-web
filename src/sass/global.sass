@@ -193,6 +193,10 @@ button, a.button
     +text-inset($lighttext)
 
 // Leaflet Map
-#track>.map
+.leaflet-container
     height: 240px
     margin: 0.2em 0
+    // reset some properties that might have been set
+    border-radius: 0
+    color: black
+    text-shadow: none

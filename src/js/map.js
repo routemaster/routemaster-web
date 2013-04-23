@@ -12,19 +12,34 @@ define("map", function(require) {
         osmAttr: "&copy;" + (new Date()).getFullYear() +
                  " OpenStreetMap Contributors",
 
-        initialize: function() {
+        // settings that get overridden when we're in "static" mode
+        staticOptions: {
+            dragging: false,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            closePopupOnClick: false,
+            keyboard: false,
+            zoomControl: false
+        },
+
+        initialize: function(options) {
+            options = _.defaults(options, {
+                isStatic: false
+            });
             this.osm = new L.TileLayer(this.osmUrl, {
                 attribution: this.osmAttr,
                 maxZoom: 17,
                 minZoom: 8
             });
-            this.leafletMap = new L.Map(this.el, {
+            this.leafletMap = new L.Map(this.el, _.extend({
                 layers: [this.osm],
                 zoom: 16,
                 // hide zoom controls on multitouch devices
                 zoomControl: !L.Browser.touch || L.Browser.android23,
                 center: [51.505, -0.09]
-            });
+            }, options.isStatic ? this.staticOptions : {}));
             // hide the "powered by Leaflet" text
             this.leafletMap.attributionControl.setPrefix(false);
             // Apply any css we might have for `.map`
@@ -45,8 +60,7 @@ define("map", function(require) {
 
         // Due to a bug in leaflet: http://stackoverflow.com/q/10762984/130598
         fixMapDisplay: function() {
-            var map = this.leafletMap;
-            L.Util.requestAnimFrame(map.invalidateSize,map,!1,map._container);
+            this.leafletMap.invalidateSize(false);
         },
 
         close: function() {

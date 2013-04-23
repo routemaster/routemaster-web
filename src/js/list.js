@@ -42,6 +42,7 @@ define("list", function(require) {
         initialize: function(options) {
             this.shortTemplate = options.shortTemplate;
             this.expandedTemplate = options.expandedTemplate;
+            this.itemView = options.itemView;
             this.$ol = $('<ol/>').addClass("listing");
         },
 
@@ -51,7 +52,7 @@ define("list", function(require) {
             this.collection.each(function(model) {
                 var $li = $('<li/>');
                 this.$ol.append($li);
-                this.subViews.push(new ListElementView({
+                this.subViews.push(new this.itemView({
                     el: $li,
                     model: model,
                     shortTemplate: this.shortTemplate,
@@ -66,5 +67,8 @@ define("list", function(require) {
         }
     });
 
-    return { ListView: ListView };
+    return {
+        ListView: ListView,
+        ListElementView: ListElementView
+    };
 });
