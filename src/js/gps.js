@@ -62,8 +62,7 @@ define("gps", function(require) {
 
         onTracking: function() {
             if(this.get("tracking")) {
-                var startName = window.prompt("Where are you starting?",
-                                                  "CSE");
+                var startName = window.prompt("Where are you starting?", "CSE");
                 startName = startName ? startName : "unspecified";
                 this.set({
                     startTime: Date.now(),
@@ -74,8 +73,7 @@ define("gps", function(require) {
                 });
             } else {
                 if(this.get("waypoints").length > 1) {
-                    var endName = window.prompt("Where are you ending?",
-                                                    "CSE");
+                    var endName = window.prompt("Where are you ending?", "CSE");
                     endName = endName ? endName : "unspecified";
                     this.set({
                         time: this.get("updatedTime") - this.get("startTime"),
@@ -176,7 +174,9 @@ define("gps", function(require) {
         render: function() {
             var state = _.extend(_.clone(this.model.attributes), {
                 formattedTime: time.relative(this.model.get("startTime"),
-                                             Date.now())
+                                             Date.now()),
+                formattedDistance: this.model.get("distance") !== undefined ?
+                    this.model.get("distance").toFixed(2) : undefined
             });
             this.$el.html(this.template(state));
             if(this.model.get("tracking")) {
