@@ -148,43 +148,30 @@ define("urlHandler", function(require) {
 
         history: function() {
             this.subView.close();
-            var fakeRoutes = [
-                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 29),
-                 distance: 296, efficiency: 8.5},
-                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 29),
-                 distance: 203, efficiency: 4.4},
-                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 28),
-                 distance: 298, efficiency: 8.3},
-                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 28),
-                 distance: 203, efficiency: 9.2},
-                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 27),
-                 distance: 296, efficiency: 7.4},
-                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 27),
-                 distance: 203, efficiency: 9.0},
-                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 26),
-                 distance: 296, efficiency: 8.2},
-                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 26),
-                 distance: 203, efficiency: 7.7},
-                {start: "CSE", end: "Reitz", date: new Date(2013, 3, 25),
-                 distance: 296, efficiency: 8.5},
-                {start: "CSE", end: "Little Hall", date: new Date(2013, 3, 25),
-                 distance: 203, efficiency: 8.9}
-            ];
-            var collection = new Backbone.Collection([], {
-                model: history.Route
+            var Routes = Backbone.Collection.extend({
+                model: history.Route,
+                url: "/user/1/recent/"
             });
-            collection.add(fakeRoutes);
+            var routes = new Routes();
             this.subView = new list.ListView({
                 el: $("<div/>").appendTo(this.elSubView),
-                collection: collection,
+                collection: routes,
                 shortTemplate: Mustache.compile(
                     $("#route-item-short-templ").html()
                 ),
                 expandedTemplate: Mustache.compile(
                     $("#route-item-expanded-templ").html()
-                )
+                ),
+                itemView: history.RouteItemView
             });
-            this.subView.render();
+            routes.fetch({
+                success: _.bind(function(collection, response, options) {
+                    this.subView.render();
+                }, this),
+                error: function() {
+                    console.log(arguments);
+                }
+            });
         },
 
         friends: function() {
