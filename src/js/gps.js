@@ -62,8 +62,7 @@ define("gps", function(require) {
 
         onTracking: function() {
             if(this.get("tracking")) {
-                var startName = window.prompt("Where are you starting?",
-                                                  "CSE");
+                var startName = window.prompt("Where are you starting?", "CSE");
                 startName = startName ? startName : "unspecified";
                 this.set({
                     startTime: Date.now(),
@@ -74,8 +73,7 @@ define("gps", function(require) {
                 });
             } else {
                 if(this.get("waypoints").length > 1) {
-                    var endName = window.prompt("Where are you ending?",
-                                                    "CSE");
+                    var endName = window.prompt("Where are you ending?", "CSE");
                     endName = endName ? endName : "unspecified";
                     this.set({
                         time: this.get("updatedTime") - this.get("startTime"),
@@ -89,6 +87,9 @@ define("gps", function(require) {
 
         // Called via navigator.geolocation.watchPosition
         updatePosition: function(position) {
+            // It looks like firefox pools the position object between updates
+            // so the position never actually *changes*,
+            position = _.clone(position);
             this.set({
                 // We can't mutate waypoints. If we did, the `change` event
                 // would never get triggered. Instead, we have to make a new
@@ -173,7 +174,9 @@ define("gps", function(require) {
         render: function() {
             var state = _.extend(_.clone(this.model.attributes), {
                 formattedTime: time.relative(this.model.get("startTime"),
-                                             Date.now())
+                                             Date.now()),
+                formattedDistance: this.model.get("distance") !== undefined ?
+                    this.model.get("distance").toFixed(2) : undefined
             });
             this.$el.html(this.template(state));
             if(this.model.get("tracking")) {
@@ -224,10 +227,20 @@ define("gps", function(require) {
                     this.circle = new L.Circle(leafletPosition,
                                                position.coords.accuracy);
                     this.circle.addTo(this.leafletMap);
+                    // Draw a line showing our progress
+                    this.line = new L.Polyline([], {clickable: false});
+                    this.line.addTo(this.leafletMap);
                 } else {
-                    this.marker.update(leafletPosition);
+                    this.marker.setLatLng(leafletPosition);
                     this.circle.setLatLng(leafletPosition);
                     this.circle.setRadius(position.coords.accuracy);
+                    this.line.setLatLngs(_.map(
+                        this.model.get("waypoints"),
+                        function(coords) {
+                            return new L.LatLng(coords.latitude,
+                                                coords.longitude);
+                        }
+                    ));
                 }
                 this.leafletMap.panTo(leafletPosition);
             }
