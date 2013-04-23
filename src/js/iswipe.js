@@ -9,8 +9,8 @@ define("iswipe", function(require) {
 
     var config = {
         // minimum number of pixels moved to count as a swipe
-        horizonalTriggerDelta: 30,
-        verticalTriggerDelta: 10,
+        horizonalTriggerDelta: 50,
+        verticalTriggerDelta: 20,
         devices: ["mouse", "touch"]
     };
 
@@ -24,7 +24,7 @@ define("iswipe", function(require) {
         // `"down"`, or something different, dependent on the source event.
         var down = state.down, // inherit if nothing else
             toggled,
-            device = _.isUndefined(event.touches) ? "mouse" : "touch",
+            device = _.isUndefined(event.changedTouches) ? "mouse" : "touch",
             prevState = _.clone(state);
 
         // ignore certain inputs completely
@@ -42,7 +42,7 @@ define("iswipe", function(require) {
                 down = !!(event.buttons & 1);
             }
         } else { // device === "touch"
-            if(event.touches.length > 1) {
+            if(event.touches && event.touches.length > 1) {
                 down = false; // don't mess with pinch gestures
             } else {
                 down = (verb !== "up");
@@ -53,7 +53,9 @@ define("iswipe", function(require) {
         toggled = down !== prevState.down;
 
         // find mouse or touch position
-        var screenInfo = event.touches === undefined ? event : event.touches[0],
+        var screenInfo = device === "touch" ?
+                             (event.touches[0] ? event.touches[0] : prevState) :
+                             event,
             x = screenInfo.screenX,
             y = screenInfo.screenY;
 
