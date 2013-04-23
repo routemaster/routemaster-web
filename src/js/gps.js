@@ -111,10 +111,10 @@ define("gps", function(require) {
         // This calculation works on a spherical assumption, see haversine
         // formula
         calcDist: function(pos1, pos2) {
-            var lat1 = pos1.coords.latitude,
-                lat2 = pos2.coords.latitude,
-                lon1 = pos1.coords.longitude,
-                lon2 = pos2.coords.longitude,
+            var lat1 = pos1.latitude,
+                lat2 = pos2.latitude,
+                lon1 = pos1.longitude,
+                lon2 = pos2.longitude,
                 R = 6371, // radius of earth in km
                 dLat = (lat2 - lat1) * Math.PI / 180,
                 dLon = (lon2 - lon1) * Math.PI / 180,
