@@ -1,0 +1,11 @@
+{
+    "camelcase": true,
+    "eqeqeq": true,
+    "maxlen": 80,
+    "es5": true,
+    "strict": true,
+    "trailing": true,
+    "browser": true,
+    "jquery": true,
+    "devel": true
+}
