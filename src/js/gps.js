@@ -10,17 +10,26 @@ define("gps", function(require) {
         time = require("time");
 
     var Tracker = Backbone.Model.extend({
+        url: "/route/",
+
         defaults: {
-            posList: [],
-            totalDist: undefined,
-            score: undefined,
+            waypoints: [],
+            distance: undefined,
+            time: 0,
+            waypointsLengthOnLastUpdate: 1,
+            efficiency: 100,
             watching: false, // GPS is on
             tracking: false, // We are actively logging GPS positions
             startTime: undefined,
             updatedTime: undefined,
             watchPositionId: undefined, // unique id given by watchPosition()
             position: undefined,
-            lastError: undefined
+            lastError: undefined,
+            startName: undefined,
+            endName: undefined,
+            disqualified: false,
+            userId: 1, // hard-coded for now
+            date: undefined
         },
 
         initialize: function() {
@@ -51,25 +60,41 @@ define("gps", function(require) {
             }
         },
 
-        // Actively update the posList
         onTracking: function() {
             if(this.get("tracking")) {
+                var startName = window.prompt("Where are you starting?", "CSE");
+                startName = startName ? startName : "unspecified";
                 this.set({
                     startTime: Date.now(),
-                    totalDist: 0,
-                    posList: []
+                    distance: 0,
+                    waypoints: [],
+                    startName: startName,
+                    date: Date.now()
                 });
             } else {
-                // Nothing
+                if(this.get("waypoints").length > 1) {
+                    var endName = window.prompt("Where are you ending?", "CSE");
+                    endName = endName ? endName : "unspecified";
+                    this.set({
+                        time: this.get("updatedTime") - this.get("startTime"),
+                        endName: endName
+                    });
+                    // Send to the server
+                    this.save();
+                }
             }
         },
 
         // Called via navigator.geolocation.watchPosition
         updatePosition: function(position) {
+            // It looks like firefox pools the position object between updates
+            // so the position never actually *changes*,
+            position = _.clone(position);
             this.set({
-                // We can't mutate posList. If we did, the `change` event would
-                // never get triggered. Instead, we have to make a new posList.
-                posList: this.get("posList").concat([position]),
+                // We can't mutate waypoints. If we did, the `change` event
+                // would never get triggered. Instead, we have to make a new
+                // waypoints.
+                waypoints: this.get("waypoints").concat([position.coords]),
                 position: position,
                 updatedTime: Date.now()
             });
@@ -87,41 +112,43 @@ define("gps", function(require) {
         // This calculation works on a spherical assumption, see haversine
         // formula
         calcDist: function(pos1, pos2) {
-            var lat1 = pos1.coords.latitude,
-                lat2 = pos2.coords.latitude,
-                lon1 = pos1.coords.longitude,
-                lon2 = pos2.coords.longitude,
-
+            var lat1 = pos1.latitude,
+                lat2 = pos2.latitude,
+                lon1 = pos1.longitude,
+                lon2 = pos2.longitude,
                 R = 6371, // radius of earth in km
-                dLat = (lat2 - lat1).toRad(),
-                dLon = (lon2 - lon1).toRad();
-
-            lat1 = lat1.toRad();
-            lat2 = lat2.toRad();
+                dLat = (lat2 - lat1) * Math.PI / 180,
+                dLon = (lon2 - lon1) * Math.PI / 180,
+                lat1Deg = lat1 * Math.PI / 180,
+                lat2Deg = lat2 * Math.PI / 180;
 
             var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) *
-                    Math.cos(lat2),
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2) *
+                    Math.cos(lat1Deg) * Math.cos(lat2Deg),
                 c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)),
                 d = R * c;
-            return d;
+            return d * 1000; // Distance in meters
         },
 
         updateScore: function() {
-            var posList = this.get("posList");
-            if(posList.length <= 2) {
+            var waypoints = this.get("waypoints"),
+                newPosStart = this.get("waypointsLengthOnLastUpdate");
+            if(waypoints.length <= 2) {
                 // Calculation would work fine at length=2 but would be 100
                 // anyway
-                this.set("score", 100);
+                this.set("efficiency", 100);
                 return;
             }
-            var totalDist = this.get("totalDist") + this.calcDist(
-                    posList[posList.length - 1], posList[posList.length - 2]);
-            this.set("totalDist", totalDist);
-            var straightDist = this.calcDist(posList[0],
-                                             posList[posList.length-1]);
-            this.set("score", 100 * (straightDist / totalDist) *
-                                    (straightDist / totalDist));
+            var distance = this.get("distance");
+            for(var i = newPosStart; i < waypoints.length; i++) {
+                distance += this.calcDist(waypoints[i - 1], waypoints[i]);
+            }
+            this.set("waypointsLengthOnLastUpdate", waypoints.length);
+            this.set("distance", distance);
+            var straightDist = this.calcDist(waypoints[0],
+                                             waypoints[waypoints.length-1]);
+            this.set("efficiency", Math.ceil(100 * Math.pow(straightDist, 2) /
+                                             Math.pow(distance, 2)));
         },
 
         close: function() {
@@ -147,7 +174,9 @@ define("gps", function(require) {
         render: function() {
             var state = _.extend(_.clone(this.model.attributes), {
                 formattedTime: time.relative(this.model.get("startTime"),
-                                             Date.now())
+                                             Date.now()),
+                formattedDistance: this.model.get("distance") !== undefined ?
+                    this.model.get("distance").toFixed(2) : undefined
             });
             this.$el.html(this.template(state));
             if(this.model.get("tracking")) {
@@ -198,10 +227,20 @@ define("gps", function(require) {
                     this.circle = new L.Circle(leafletPosition,
                                                position.coords.accuracy);
                     this.circle.addTo(this.leafletMap);
+                    // Draw a line showing our progress
+                    this.line = new L.Polyline([], {clickable: false});
+                    this.line.addTo(this.leafletMap);
                 } else {
-                    this.marker.update(leafletPosition);
+                    this.marker.setLatLng(leafletPosition);
                     this.circle.setLatLng(leafletPosition);
                     this.circle.setRadius(position.coords.accuracy);
+                    this.line.setLatLngs(_.map(
+                        this.model.get("waypoints"),
+                        function(coords) {
+                            return new L.LatLng(coords.latitude,
+                                                coords.longitude);
+                        }
+                    ));
                 }
                 this.leafletMap.panTo(leafletPosition);
             }
