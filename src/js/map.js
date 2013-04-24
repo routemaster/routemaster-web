@@ -60,6 +60,10 @@ define("map", function(require) {
             iswipe.disableOnElement(this.$el);
         },
 
+        render: function() {
+            this.fixMapDisplay();
+        },
+
         // Due to a bug in leaflet: http://stackoverflow.com/q/10762984/130598
         fixMapDisplay: function() {
             this.leafletMap.invalidateSize(false);

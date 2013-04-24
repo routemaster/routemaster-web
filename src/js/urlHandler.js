@@ -28,21 +28,45 @@ define("urlHandler", function(require) {
             // The `handler` corresponds to the current page. Additional
             // information from the router should be stored explicitly inside
             // the model
+            leftHandler: undefined,
             handler: "login",
+            rightHandler: undefined,
             // The nav bar might need to have some state of its own. Maybe this
             // should be its own View and Model in a module.
             navBarEnabled: true,
             loginProvider: undefined
         },
 
+        // A list of the different handler names available in the nav-bar, in
+        // order. This lets us figure out which views we should load when
+        // swiping.
+        navBarHandlers: ["track", "history", "friends", "leaders"],
+
         initialize: function() {
             this.on("change:handler", this.updateNavBar, this);
+            this.on("change:handler", this.updateAdjacentHandlers, this);
             this.updateNavBar();
+            this.updateAdjacentHandlers();
         },
 
         updateNavBar: function() {
             // Some pages shouldn't show the nav bar
             this.set("navBarEnabled", this.get("handler") !== "login");
+        },
+
+        updateAdjacentHandlers: function() {
+            var handler = this.get("handler"),
+                changes = {leftHandler: undefined, rightHandler: undefined},
+                i = _.indexOf(this.navBarHandlers, handler);
+            if(i >= 0) {
+                var h = this.navBarHandlers, l = h.length;
+                _.extend(changes, {
+                    leftHandler:  i - 1 >= 0 ? h[i - 1] : undefined,
+                    rightHandler: i + 1 <  l ? h[i + 1] : undefined
+                });
+            }
+            // apply the changes
+            this.set(changes);
         }
     });
 
@@ -51,14 +75,13 @@ define("urlHandler", function(require) {
     // tracking page, etc. It subscribes to changes in the `State` model and
     // updates the display automatically.
     var PageView = Backbone.View.extend({
-        subView: {close: function() {}}, // The current frontmost subview
-        elSubView: $("#subview"),
+        subView: undefined, // The current frontmost subview
+        subViewCache: {},
+        el: $("#subview"),
         elNavBar: $("#top nav"),
 
         initialize: function() {
-            this.model.on("change:handler", function(model, handler) {
-                this[handler]();
-            }, this);
+            this.model.on("change:handler", this.render, this);
             this.model.on("change:navBarEnabled", this.updateNavBar, this);
             // disable dragging on the page
             $("body").on("dragstart", function(event) {
@@ -89,7 +112,7 @@ define("urlHandler", function(require) {
         // We can't use `overflow:auto` because not all browsers support it yet.
         // (I'm looking at you, Android 2.x)
         collapseSubView: function(view) {
-            view = view || this.elSubView;
+            view = view || this.$el;
             // we use a 0 ms animation, so that zepto handles browser
             // prefixing issues for us
             $(view.children()[0]).animate({
@@ -101,7 +124,7 @@ define("urlHandler", function(require) {
 
         // Un-does the modifications made by `collapseSubView`.
         expandSubView: function(view) {
-            view = view || this.elSubView;
+            view = view || this.$el;
             $(view.children()[0]).animate({
                 translateY: "0px"
             }, 0);
@@ -115,45 +138,64 @@ define("urlHandler", function(require) {
                 // we use a 0 ms animation, so that zepto handles browser
                 // prefixing issues for us
                 this.collapseSubView();
-                $(this.elSubView.children()[0]).animate({
+                $(this.$el.children()[0]).animate({
                     translateX: event.data.swipeX + "px",
                     // the y transformation has to be re-done because we're
                     // overwriting the whole css `"transform"` property here
-                    translateY: -this.elSubView.scrollTop() + "px"
+                    translateY: -this.$el.scrollTop() + "px"
                 }, 0);
             } else {
                 event.data.disableClick();
-                $(this.elSubView.children()[0]).animate(
+                $(this.$el.children()[0]).animate(
                     {translateX: "0px"}, 150, "ease-out",
                     _.bind(this.expandSubView, this)
                 );
             }
         },
 
+        getCachedSubView: function(handler) {
+            var cache = this.subViewCache;
+            if(cache[handler] === undefined) {
+                console.log("constructing");
+                cache[handler] = this[handler]();
+            }
+            return cache[handler];
+        },
+
+        render: function(model) {
+            var handler = model.get("handler"),
+                prevousHandler = model.previous("handler");
+            if(handler !== prevousHandler) {
+                if(this.subView !== undefined) {
+                    this.subView.remove();
+                }
+                this.subView = this.getCachedSubView(handler);
+                this.$el.append(this.subView.$el);
+                this.subView.render();
+            }
+        },
+
         login: function() {
-            this.subView.close();
-            this.subView = new login.LoginView({
-                el: $("<div/>").appendTo(this.elSubView),
+            return new login.LoginView({
+                el: $("<div/>"),
                 model: login.model
             });
         },
 
         track: function() {
-            this.subView.close();
-            this.subView = new gps.TrackView({
-                el: $("<div/>").appendTo(this.elSubView),
+            return new gps.TrackView({
+                el: $("<div/>"),
                 model: gpsTracker
             });
         },
 
         history: function() {
-            this.subView.close();
             var Routes = Backbone.Collection.extend({
                 model: history.Route,
                 url: "/user/1/recent/"
             });
             var routes = new Routes();
-            this.subView = new list.ListView({
+            var subView = new list.ListView({
                 el: $("<div/>").appendTo(this.elSubView),
                 collection: routes,
                 shortTemplate: Mustache.compile(
@@ -165,17 +207,15 @@ define("urlHandler", function(require) {
                 itemView: history.RouteItemView
             });
             routes.fetch({
-                success: _.bind(function(collection, response, options) {
-                    this.subView.render();
-                }, this),
+                success: _.bind(subView.render, subView),
                 error: function() {
                     console.log(arguments);
                 }
             });
+            return subView;
         },
 
         friends: function() {
-            this.subView.close();
             var fakeFriends = [
                 {name: "Manuel Bermúdez"},
                 {name: "Manuel Bermúdez"},
@@ -193,8 +233,8 @@ define("urlHandler", function(require) {
                 model: friend.Friend
             });
             collection.add(fakeFriends);
-            this.subView = new list.ListView({
-                el: $("<div/>").appendTo(this.elSubView),
+            return new list.ListView({
+                el: $("<div/>"),
                 collection: collection,
                 shortTemplate: Mustache.compile(
                     $("#friend-item-short-templ").html()
@@ -203,11 +243,9 @@ define("urlHandler", function(require) {
                     $("#friend-item-expanded-templ").html()
                 )
             });
-            this.subView.render();
         },
 
         leaders: function() {
-            this.subView.close();
             var fakeFriends = [
                 {name: "Manuel Bermúdez"},
                 {name: "Manuel Bermúdez"},
@@ -225,8 +263,8 @@ define("urlHandler", function(require) {
                 model: friend.Friend
             });
             collection.add(fakeFriends);
-            this.subView = new list.ListView({
-                el: $("<div/>").appendTo(this.elSubView),
+            return new list.ListView({
+                el: $("<div/>"),
                 collection: collection,
                 shortTemplate: Mustache.compile(
                     $("#friend-item-short-templ").html()
@@ -235,7 +273,6 @@ define("urlHandler", function(require) {
                     $("#friend-item-expanded-templ").html()
                 )
             });
-            this.subView.render();
         }
     });
 

@@ -14,6 +14,7 @@ define("list", function(require) {
         initialize: function(options) {
             this.shortTemplate = options.shortTemplate;
             this.expandedTemplate = options.expandedTemplate;
+            this.render();
         },
 
         toggle: function() {

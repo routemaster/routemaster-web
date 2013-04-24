@@ -68,7 +68,7 @@ define("history", function(require) {
                 expandedElement.append(this.map.$el);
                 // zooming must happen after map is drawn (so that leaflet can
                 // figure out the size of the map it's working with)
-                this.map.fixMapDisplay();
+                this.map.render();
                 this.zoomPath();
             } else {
                 this.map = undefined;

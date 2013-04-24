@@ -184,6 +184,7 @@ define("gps", function(require) {
         },
 
         render: function() {
+            map.MapView.prototype.render.apply(this, _.toArray(arguments));
             var position = this.model.get("position");
             if(position !== undefined) {
                 var leafletPosition = new L.LatLng(
