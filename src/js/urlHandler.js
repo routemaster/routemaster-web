@@ -125,7 +125,7 @@ define("urlHandler", function(require) {
                 {name: "Manuel Bermúdez"},
                 {name: "Manuel Bermúdez"},
                 {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"}
             ];
             var collection = new Backbone.Collection([], {
                 model: friend.Friend
@@ -157,7 +157,7 @@ define("urlHandler", function(require) {
                 {name: "Manuel Bermúdez"},
                 {name: "Manuel Bermúdez"},
                 {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
+                {name: "Manuel Bermúdez"}
             ];
             var collection = new Backbone.Collection([], {
                 model: friend.Friend
