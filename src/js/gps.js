@@ -267,6 +267,11 @@ define("gps", function(require) {
             this.$el.attr("id", "track");
         },
 
+        render: function() {
+            this.hud.render();
+            this.map.render();
+        },
+
         close: function() {
             this.remove();
             this.unbind();

@@ -5,15 +5,19 @@ define("urlHandler", function(require) {
     var Backbone = require("backbone"),
         _ = require("underscore"),
         $ = require("jquery"),
-        // navBar = require("navBar"),
-        gps = require("gps"),
         Mustache = require("mustache"),
+        navBar = require("navBar"),
+        gps = require("gps"),
         list = require("list"),
         history = require("history"),
         login = require("login"),
         friend = require("friend");
 
     require("iswipe").start(); // use our iswipe jquery plugin
+    // disable elements (like images) dragging on the page
+    $("body").on("dragstart", function(event) {
+        event.preventDefault();
+    });
 
     // I'm not totally sure where we should put this yet. It needs to be
     // initialized ASAP to give the device time to get a GPS fix.
@@ -25,33 +29,16 @@ define("urlHandler", function(require) {
     // URL.
     var State = Backbone.Model.extend({
         defaults: {
-            // The `handler` corresponds to the current page. Additional
-            // information from the router should be stored explicitly inside
-            // the model
             leftHandler: undefined,
             handler: "login",
             rightHandler: undefined,
-            // The nav bar might need to have some state of its own. Maybe this
-            // should be its own View and Model in a module.
-            navBarEnabled: true,
             loginProvider: undefined
         },
 
-        // A list of the different handler names available in the nav-bar, in
-        // order. This lets us figure out which views we should load when
-        // swiping.
-        navBarHandlers: ["track", "history", "friends", "leaders"],
-
         initialize: function() {
-            this.on("change:handler", this.updateNavBar, this);
-            this.on("change:handler", this.updateAdjacentHandlers, this);
-            this.updateNavBar();
+            this.navBar = new navBar.Model({parent: this});
+            this.listenTo(this, "change:handler", this.updateAdjacentHandlers);
             this.updateAdjacentHandlers();
-        },
-
-        updateNavBar: function() {
-            // Some pages shouldn't show the nav bar
-            this.set("navBarEnabled", this.get("handler") !== "login");
         },
 
         updateAdjacentHandlers: function() {
@@ -78,30 +65,14 @@ define("urlHandler", function(require) {
         subView: undefined, // The current frontmost subview
         subViewCache: {},
         el: $("#subview"),
-        elNavBar: $("#top nav"),
 
         initialize: function() {
-            this.model.on("change:handler", this.render, this);
-            this.model.on("change:navBarEnabled", this.updateNavBar, this);
-            // disable dragging on the page
-            $("body").on("dragstart", function(event) {
-                event.preventDefault();
+            this.listenTo(this.model, "change:handler", this.render);
+            this.navBar = new navBar.View({
+                parent: this,
+                model: this.model.navBar
             });
-            // Load the default page
-            this[this.model.get("handler")]();
-            this.swipeHandlerBound = _.bind(this.swipeHandler, this);
-            this.updateNavBar();
-        },
-
-        updateNavBar: function() {
-            var enabled = this.model.get("navBarEnabled");
-            // This seems a bit hackish. There might be a better way of
-            // implementing this.
-            this.elNavBar.css("display", enabled ? "" : "none");
-            var ev = _.bind($(document)[enabled ? "on" : "off"], $(document));
-            ev("iswipe:start", this.swipeHandlerBound);
-            ev("iswipe:end", this.swipeHandlerBound);
-            ev("iswipe:move", this.swipeHandlerBound);
+            this.render();
         },
 
         // Makes the given subview element the correct size such that our page
@@ -132,38 +103,17 @@ define("urlHandler", function(require) {
             view.css("height", "");
         },
 
-        swipeHandler: function(event) {
-            if(event.data.axis !== "horizontal") { return; }
-            if(_.contains(["iswipe:start", "iswipe:move"], event.type)) {
-                // we use a 0 ms animation, so that zepto handles browser
-                // prefixing issues for us
-                this.collapseSubView();
-                $(this.$el.children()[0]).animate({
-                    translateX: event.data.swipeX + "px",
-                    // the y transformation has to be re-done because we're
-                    // overwriting the whole css `"transform"` property here
-                    translateY: -this.$el.scrollTop() + "px"
-                }, 0);
-            } else {
-                event.data.disableClick();
-                $(this.$el.children()[0]).animate(
-                    {translateX: "0px"}, 150, "ease-out",
-                    _.bind(this.expandSubView, this)
-                );
-            }
-        },
-
         getCachedSubView: function(handler) {
             var cache = this.subViewCache;
             if(cache[handler] === undefined) {
-                console.log("constructing");
                 cache[handler] = this[handler]();
             }
             return cache[handler];
         },
 
-        render: function(model) {
-            var handler = model.get("handler"),
+        render: function() {
+            var model = this.model,
+                handler = model.get("handler"),
                 prevousHandler = model.previous("handler");
             if(handler !== prevousHandler) {
                 if(this.subView !== undefined) {
@@ -208,9 +158,7 @@ define("urlHandler", function(require) {
             });
             routes.fetch({
                 success: _.bind(subView.render, subView),
-                error: function() {
-                    console.log(arguments);
-                }
+                error: _.bind(console.error, console)
             });
             return subView;
         },
