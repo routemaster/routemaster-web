@@ -3,7 +3,8 @@ define("map", function(require) {
 
     var Backbone = require("backbone"),
         L = require("leaflet"),
-        _ = require("underscore");
+        _ = require("underscore"),
+        iswipe = require("iswipe");
 
     // This is intended to be a generic view for a leaflet map. This has no
     // associated model, and data should be supplied to it by an extended view.
@@ -56,6 +57,11 @@ define("map", function(require) {
             );
             this.delegateEvents(fixMapEvents);
             this.fixMapDisplay();
+            iswipe.disableOnElement(this.$el);
+        },
+
+        render: function() {
+            this.fixMapDisplay();
         },
 
         // Due to a bug in leaflet: http://stackoverflow.com/q/10762984/130598
@@ -64,6 +70,7 @@ define("map", function(require) {
         },
 
         close: function() {
+            iswipe.enableOnElement(this.$el);
             this.remove();
             this.unbind();
         }

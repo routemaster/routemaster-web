@@ -213,6 +213,7 @@ define("gps", function(require) {
         },
 
         render: function() {
+            map.MapView.prototype.render.apply(this, _.toArray(arguments));
             var position = this.model.get("position");
             if(position !== undefined) {
                 var leafletPosition = new L.LatLng(
@@ -264,6 +265,11 @@ define("gps", function(require) {
                 el: $("<div/>").appendTo(this.$el)
             });
             this.$el.attr("id", "track");
+        },
+
+        render: function() {
+            this.hud.render();
+            this.map.render();
         },
 
         close: function() {
