@@ -1,2 +1,4 @@
 dist
 bin
+.sass-cache
+node_modules

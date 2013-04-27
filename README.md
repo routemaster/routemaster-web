@@ -21,15 +21,17 @@ Eventually it should contain the build scripts for our Phonegap builds.
 Building the Project
 --------------------
 
-1. Install Maven
-    - Install it on Debian with `aptitude install maven`
-    - Install it on Arch with `pacman -S maven`
-    - The Maven wiki has
-      [installation instructions for Windows](https://maven.apache.org/guides/getting-started/windows-prerequisites.html)
-2. Package the application with `mvn package`
-    - You can alternatively run `mvn compile`, which builds only the class files
-      and copies over the resources into `bin`
-3. Run the jar with `java -jar dist/routemaster-frontend-0.0.1-SNAPSHOT.jar`.
+1.  Install `nodejs`. There's [information about how to do this on the node
+    wiki][node wiki].
+2.  Install `sass`. The [sass website has information on how to do this][sass
+    website].
+3.  Install the `grunt` command-line tool: `sudo npm install -g grunt-cli`.
+4.  Install all local dependencies: `npm install`
+5.  Compile by simply running: `grunt`
+
+[node wiki]: https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager
+
+[sass website]: http://sass-lang.com/download.html
 
 Project Scope
 -------------
