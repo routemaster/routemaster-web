@@ -12,7 +12,7 @@ define("login", function(require) {
         validProviders: ["facebook", "twitter", "openid"],
 
         defaults: {
-            provider: undefined,
+            provider: undefined
         },
 
         initialize: function() {
