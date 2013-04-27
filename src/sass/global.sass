@@ -72,7 +72,7 @@ section .listing
     li
         padding: 0
         // collapsed view
-        > div:first-child
+        > div.listitem
             // we should do something like:
             // http://stackoverflow.com/a/8049370/130598
             // so that the .green and .red classes will apply properly
@@ -86,9 +86,6 @@ section .listing
                 display: block
                 padding: 0.4em 0.5em
                 +text-inset($blacktext)
-        // expanded view
-        > div:nth-last-child(-n+1)
-            @extend .inverted
 
 form
     ul
