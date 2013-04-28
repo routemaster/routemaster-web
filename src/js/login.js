@@ -47,7 +47,8 @@ define("login", function(require) {
         template: Mustache.compile($("#login-tmpl").html()),
 
         initialize: function() {
-            this.render();
+            this.render()=;
+            this.on("change:provider", this.render, this);
         },
 
         render: function() {
