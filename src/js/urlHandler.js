@@ -123,34 +123,30 @@ define("urlHandler", function(require) {
 
         leaders: function() {
             this.subView.close();
-            var fakeFriends = [
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"}
-            ];
-            var collection = new Backbone.Collection([], {
-                model: friend.Friend
+            var Routes = Backbone.Collection.extend({
+                model: history.Route,
+                url: "/leaders/efficiency/"
             });
-            collection.add(fakeFriends);
+            var routes = new Routes();
             this.subView = new list.ListView({
                 el: $("<section/>").appendTo($("#subview")),
-                collection: collection,
+                collection: routes,
                 shortTemplate: Mustache.compile(
-                    $("#friend-item-short-templ").html()
+                    $("#leader-item-short-templ").html()
                 ),
                 expandedTemplate: Mustache.compile(
-                    $("#friend-item-expanded-templ").html()
-                )
+                    $("#route-item-expanded-templ").html()
+                ),
+                itemView: history.RouteItemView
             });
-            this.subView.render();
+            routes.fetch({
+                success: _.bind(function(collection, response, options) {
+                    this.subView.render();
+                }, this),
+                error: function() {
+                    console.log(arguments);
+                }
+            });
         }
     });
 
