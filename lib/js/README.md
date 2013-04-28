@@ -22,4 +22,5 @@ What Each Library Gives Us
     programming constructs, which are nice to use
 -   **Zepto**: A light-weight clone of JQuery. Essentially JQuery without the IE
     stuff
+-   **PlusOne**: Given as part of the Google+ API
 

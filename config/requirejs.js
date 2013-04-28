@@ -8,7 +8,8 @@ require.config({
         underscore: "../../lib/js/underscore",
         jquery: "../../lib/js/zepto",
         mustache: "../../lib/js/mustache",
-        leaflet: "../../lib/js/leaflet"
+        leaflet: "../../lib/js/leaflet",
+        plusone: "../../lib/js/plusone"
     },
 
     modules: [
@@ -28,6 +29,10 @@ require.config({
         jquery: {
             exports: "$"
         },
+        plusone: {
+            exports: "gapi",
+            deps: ["jquery"]
+	},
         leaflet: {
             exports: "L"
         }
