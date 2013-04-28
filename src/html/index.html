@@ -83,92 +83,20 @@
   <section id="select-provider">
     <h1>Welcome!</h1>
     <ul class="vertical-buttons">
-      <li><a id="with-facebook" href="#login/facebook" class="button">
-        Log in with <strong>Facebook</strong>
-      </a></li>
-      <li><a id="with-twitter" href="#login/twitter" class="button">
-        Log in with <strong>Twitter</strong>
-      </a></li>
-      <li><a id="with-openid" href="#login/openid" class="button">
-        Log in with <strong>OpenID</strong>
-      </a></li>
-      <li><a id="with-google" href="#login/google" class="button">
-        Log in with <strong>Google</strong>
-      </a></li>
+      <li>
+        <span id="signinButton">
+          <span class="g-signin button"
+            data-callback="signinCallback"
+            data-clientid="711623872832.apps.googleusercontent.com"
+            data-cookiepolicy="single_host_origin"
+            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+            data-scope="https://www.googleapis.com/auth/plus.login">
+            Log in with <strong>Google</strong>
+          </span>
+        </span>
+      </li>
     </ul>
   </section>
-  {{#facebook}}
-    <section id="form-facebook" class="hidden">
-      <form id="login-form">
-        <ul>
-          <li>
-            <label for="login-id">Username</label>
-            <span><input id="login-id" type="text"></span>
-          </li>
-          <li>
-            <label for="login-password">Password</label>
-            <span><input id="login-password" type="password"></span>
-          </li>
-          <li>
-            <label>&nbsp;</label>
-            <span><button id="login-submit" type="submit">Log in</button></span>
-          </li>
-        </ul>
-      </form>
-    </section>
-  {{/facebook}}
-  {{#twitter}}
-    <section id="form-twitter" class="hidden">
-      <form id="login-form">
-        <ul>
-          <li>
-            <label for="login-id">Username</label>
-            <span><input id="login-id" type="text"></span>
-          </li>
-          <li>
-            <label for="login-password">Password</label>
-            <span><input id="login-password" type="password"></span>
-          </li>
-          <li>
-            <label>&nbsp;</label>
-            <span><button id="login-submit" type="submit">Log in</button></span>
-          </li>
-        </ul>
-      </form>
-    </section>
-  {{/twitter}}
-  {{#openid}}
-    <section id="form-openid" class="hidden">
-      <form id="login-form">
-        <ul>
-          <li>
-            <label for="login-id">Identifier</label>
-            <span><input id="login-id" type="text"></span>
-          </li>
-          <li>
-            <label>&nbsp;</label>
-            <span><button id="login-submit" type="submit">Log in</button></span>
-          </li>
-        </ul>
-      </form>
-    </section>
-  {{/openid}}
-  {{#google}}
-    <section id="form-google" class="hidden">
-      <form id="login-form">
-        <button class="button"
-            href="#login/google"
-            data-scope="https://www.googleapis.com/auth/plus.login"
-            data-requestvisibleactions="http://schemas.google.com/AddActivity"
-            data-clientId="711623872832.apps.googleusercontent.com"
-            data-callback="onSignInCallback"
-            data-theme="dark"
-            data-cookiepolicy="single_host_origin">
-            Log in with <strong>Google</strong>
-        </button>
-      </form>
-    </section>
-  {{/google}}
   <section>
     <a href="#track">Skip</a>
   </section>
@@ -232,5 +160,27 @@
   <div class="error"><p>{{message}}</p></div>
 </script>
 
+<script type="text/javascript">
+function signinCallback(authResult) {
+  if (authResult['access_token']) {
+    // Successfully authorized
+    // Hide the sign-in button now that the user is authorized, for example:
+    document.getElementById('signinButton').setAttribute('style', 'display: none');
+  } else if (authResult['error']) {
+    // There was an error.
+    // Possible error codes:
+    //   "access_denied" - User denied access to your app
+    //   "immediate_failed" - Could not automatically log in the user
+    // console.log('There was an error: ' + authResult['error']);
+  }
+}
+</script>
+<script type="text/javascript">
+(function() {
+ var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+ po.src = 'https://apis.google.com/js/client:plusone.js';
+ var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+ })();
+</script>
 </body>
 </html>
