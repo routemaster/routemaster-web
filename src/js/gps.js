@@ -29,7 +29,8 @@ define("gps", function(require) {
             endName: undefined,
             disqualified: false,
             userId: 1, // hard-coded for now
-            date: undefined
+            date: undefined,
+            locationGuess: ""
         },
 
         initialize: function() {
@@ -62,7 +63,8 @@ define("gps", function(require) {
 
         onTracking: function() {
             if(this.get("tracking")) {
-                var startName = window.prompt("Where are you starting?", "CSE");
+                var startName = window.prompt("Where are you starting?",
+                                              this.get("locationGuess"));
                 startName = startName ? startName : "unspecified";
                 this.set({
                     startTime: Date.now(),
@@ -73,7 +75,8 @@ define("gps", function(require) {
                 });
             } else {
                 if(this.get("waypoints").length > 1) {
-                    var endName = window.prompt("Where are you ending?", "CSE");
+                    var endName = window.prompt("Where are you ending?",
+                                                this.get("locationGuess"));
                     endName = endName ? endName : "unspecified";
                     this.set({
                         time: this.get("updatedTime") - this.get("startTime"),
@@ -99,6 +102,12 @@ define("gps", function(require) {
                 updatedTime: Date.now()
             });
             this.updateScore();
+            // Update our location name guess
+            var c = position.coords,
+                url = "/waypoint/near/" + c.latitude + "," + c.longitude + "/";
+            $.get(url, _.bind(function(name) {
+                this.set({locationGuess: name});
+            }, this));
         },
 
         updatePositionError: function(error) {
