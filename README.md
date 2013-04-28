@@ -11,6 +11,11 @@ Walking is boring. Let's turn it into an online multiplayer competitive game!
 - Earn points for walking efficient routes
 - Earn points for exploring more area than your friends
 
+Screenshot
+----------
+
+![Picture](https://www.cise.ufl.edu/~woodruff/routemaster/github_screenshot.png)
+
 Repository Organization
 -----------------------
 
