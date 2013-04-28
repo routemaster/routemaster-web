@@ -68,6 +68,9 @@ define("gps", function(require) {
                     startTime: Date.now(),
                     distance: 0,
                     waypoints: [],
+                    waypointsLengthOnLastUpdate: 1,
+                    efficiency: 100,
+                    time: 0,
                     startName: startName,
                     date: Date.now()
                 });
