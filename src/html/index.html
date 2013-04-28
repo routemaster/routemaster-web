@@ -92,6 +92,9 @@
       <li><a id="with-openid" href="#login/openid" class="button">
         Log in with <strong>OpenID</strong>
       </a></li>
+      <li><a id="with-google" href="#login/google" class="button">
+        Log in with <strong>Google</strong>
+      </a></li>
     </ul>
   </section>
   {{#facebook}}
@@ -150,6 +153,22 @@
       </form>
     </section>
   {{/openid}}
+  {{#google}}
+    <section id="form-google" class="hidden">
+      <form id="login-form">
+        <ul>
+          <li>
+            <label for="login-id">Identifier</label>
+            <span><input id="login-id" type="text"></span>
+          </li>
+          <li>
+            <label>&nbsp;</label>
+            <span><button id="login-submit" type="submit">Log in</button></span>
+          </li>
+        </ul>
+      </form>
+    </section>
+  {{/google}}
   <section>
     <a href="#track">Skip</a>
   </section>
