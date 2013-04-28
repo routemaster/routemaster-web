@@ -11,7 +11,8 @@ define("urlHandler", function(require) {
         list = require("list"),
         history = require("history"),
         login = require("login"),
-        friend = require("friend");
+        friend = require("friend"),
+        error = require("error");
 
     // I'm not totally sure where we should put this yet. It needs to be
     // initialized ASAP to give the device time to get a GPS fix.
@@ -114,34 +115,10 @@ define("urlHandler", function(require) {
 
         friends: function() {
             this.subView.close();
-            var fakeFriends = [
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"},
-                {name: "Manuel Bermúdez"}
-            ];
-            var collection = new Backbone.Collection([], {
-                model: friend.Friend
-            });
-            collection.add(fakeFriends);
-            this.subView = new list.ListView({
+            this.subView = new error.ErrorView({
                 el: $("<section/>").appendTo($("#subview")),
-                collection: collection,
-                shortTemplate: Mustache.compile(
-                    $("#friend-item-short-templ").html()
-                ),
-                expandedTemplate: Mustache.compile(
-                    $("#friend-item-expanded-templ").html()
-                )
+                message: "You are not logged in."
             });
-            this.subView.render();
         },
 
         leaders: function() {
