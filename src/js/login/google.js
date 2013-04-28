@@ -18,9 +18,9 @@
 
 define("login/google", function(require) {
     "use strict";
-    
+
     var gapi = require("plusone");
-    
+
     var BASE_API_PATH = 'plus/v1/';
 
     /**
@@ -115,7 +115,8 @@ define("login/google", function(require) {
                   $('<p><img src=\"' + profile.image.url + '\"></p>'));
               $('#profile').append(
                   $('<p>Hello ' + profile.displayName + '!<br />Tagline: ' +
-                  profile.tagline + '<br />About: ' + profile.aboutMe + '</p>'));
+                    profile.tagline + '<br />About: ' + profile.aboutMe +
+                    '</p>'));
               if (profile.cover && profile.coverPhoto) {
                   $('#profile').append(
                   $('<p><img src=\"' + profile.cover.coverPhoto.url +
