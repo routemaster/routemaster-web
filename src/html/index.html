@@ -184,10 +184,23 @@ function signinCallback(authResult) {
 function getEmailCallback(obj){
   var email = obj['email'];
   if (obj['email']) {
-      console.log(email);
-      console.log("Hello" + obj['email']);
+      console.log("Hello " + obj['email']);
   }
-  window.username = email; //THIS IS A HACK
+  window.username = email; // THIS IS A HACK
+
+  // Get the user's friends
+
+  var request = gapi.client.plus.people.list({
+      'userId' : 'me',
+      'collection' : 'visible'
+  });
+
+  request.execute(function(resp) {
+      var numItems = resp.items.length;
+      for (var i = 0; i < numItems; i++) {
+          console.log(resp.items[i].displayName);
+      }
+  });
 }
 
 </script>
