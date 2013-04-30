@@ -90,7 +90,8 @@
             data-clientid="711623872832.apps.googleusercontent.com"
             data-cookiepolicy="single_host_origin"
             data-requestvisibleactions="http://schemas.google.com/AddActivity"
-            data-scope="https://www.googleapis.com/auth/plus.login">
+            data-scope="https://www.googleapis.com/auth/plus.login
+              https://www.googleapis.com/auth/userinfo.email">
             Log in with <strong>Google</strong>
           </span>
         </span>
@@ -165,6 +166,11 @@ function signinCallback(authResult) {
   if (authResult['access_token']) {
     // Successfully authorized
     // Hide the sign-in button now that the user is authorized, for example:
+    gapi.auth.setToken(authResult);
+    gapi.client.load('oauth2','v2', function() {
+        var request = gapi.client.oauth2.userinfo.get();
+        request.execute(getEmailCallback);
+        });
     window.location.hash = "track";
   } else if (authResult['error']) {
     // There was an error.
@@ -174,6 +180,16 @@ function signinCallback(authResult) {
     // console.log('There was an error: ' + authResult['error']);
   }
 }
+
+function getEmailCallback(obj){
+  var email = obj['email'];
+  if (obj['email']) {
+      console.log(email);
+      console.log("Hello" + obj['email']);
+  }
+  window.username = email; //THIS IS A HACK
+}
+
 </script>
 <script type="text/javascript">
 (function() {
