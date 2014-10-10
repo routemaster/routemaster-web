@@ -52,7 +52,8 @@ module.exports = function(grunt) {
             all: {
                 options: {
                     style: "compressed",
-                    unixNewlines: true
+                    unixNewlines: true,
+                    sourcemap: "inline"
                 },
                 files: {
                     "bin/css/global.css": "src/sass/global.sass"
